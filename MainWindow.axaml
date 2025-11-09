@@ -1,0 +1,179 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        x:Class="ProgramBox.MainWindow"
+        Title="ProgramBox - 编程环境管理工具"
+        Width="1200" Height="800"
+        MinWidth="900" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{DynamicResource PrimaryBrush}" Padding="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Logo and Title -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="⚡" FontSize="32" Foreground="White" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBlock Text="ProgramBox" FontSize="20" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Search Box -->
+                <TextBox x:Name="SearchBox" 
+                       Grid.Column="1" 
+                       Watermark="搜索工具和环境..."
+                       Width="300"
+                       Height="36"
+                       Margin="32,0"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Background="White"/>
+
+                <!-- Action Buttons -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                    <Button x:Name="SettingsButton"
+                          Content="⚙"
+                          ToolTip.Tip="设置"
+                          Click="SettingsButton_Click"
+                          Background="Transparent"
+                          Foreground="White"
+                          BorderThickness="0"
+                          FontSize="20"/>
+                    <Button x:Name="MinimizeButton"
+                          Content="—"
+                          ToolTip.Tip="最小化"
+                          Click="MinimizeButton_Click"
+                          Background="Transparent"
+                          Foreground="White"
+                          BorderThickness="0"
+                          FontSize="20"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Navigation Panel -->
+            <Border Grid.Column="0" 
+                  Background="{DynamicResource SurfaceBrush}"
+                  BorderBrush="{DynamicResource BorderBrush}"
+                  BorderThickness="0,0,1,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="8">
+                        <!-- Categories -->
+                        <TextBlock Text="分类" Classes="SectionHeader"/>
+                        <Button x:Name="DevelopmentToolsButton" 
+                              Classes="Navigation"
+                              Click="CategoryButton_Click" Tag="development">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="💻" FontSize="20"/>
+                                <TextBlock Text="开发环境"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="SystemToolsButton" 
+                              Classes="Navigation"
+                              Click="CategoryButton_Click" Tag="system">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="⚙" FontSize="20"/>
+                                <TextBlock Text="系统工具"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="ApplicationsButton" 
+                              Classes="Navigation"
+                              Click="CategoryButton_Click" Tag="applications">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="📦" FontSize="20"/>
+                                <TextBlock Text="应用程序"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Content Area -->
+            <Grid Grid.Column="1" Background="{DynamicResource BackgroundBrush}">
+                <ContentControl x:Name="ContentArea"/>
+                
+                <!-- Default Content -->
+                <ScrollViewer x:Name="DefaultContent" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="24">
+                        <!-- Welcome Section -->
+                        <Border Classes="Card" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="欢迎使用 ProgramBox" Classes="Title"/>
+                                <TextBlock Text="专为程序员设计的多语言开发环境管理工具" Classes="Body" Margin="0,0,0,16"/>
+                                <StackPanel Orientation="Horizontal" Spacing="16">
+                                    <Button Content="开始使用" Click="GetStartedButton_Click"/>
+                                    <Button Content="查看文档" Click="ViewDocumentationButton_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Features Grid -->
+                        <TextBlock Text="主要功能" Classes="Subtitle" Margin="0,0,0,16"/>
+                        <UniformGrid Columns="3" Margin="0,0,0,24">
+                            <!-- Development Tools -->
+                            <Border Classes="Card" Cursor="Hand" PointerPressed="DevelopmentCard_Click">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="💻" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                                    <TextBlock Text="开发环境" Classes="Subtitle" TextAlignment="Center"/>
+                                    <TextBlock Text="管理Java、Node.js、Python等开发环境" Classes="Body" TextAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- System Tools -->
+                            <Border Classes="Card" Cursor="Hand" PointerPressed="SystemCard_Click">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="⚙" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                                    <TextBlock Text="系统工具" Classes="Subtitle" TextAlignment="Center"/>
+                                    <TextBlock Text="快速访问Windows系统管理工具" Classes="Body" TextAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Application Management -->
+                            <Border Classes="Card" Cursor="Hand" PointerPressed="ApplicationCard_Click">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="📦" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                                    <TextBlock Text="应用管理" Classes="Subtitle" TextAlignment="Center"/>
+                                    <TextBlock Text="管理和快速启动常用应用程序" Classes="Body" TextAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}" 
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Height="24">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="StatusText" Text="就绪" FontSize="12" VerticalAlignment="Center" Margin="8,0"/>
+                <TextBlock x:Name="VersionText" Text="版本 2.0.0" FontSize="12" VerticalAlignment="Center" Margin="8,0" Grid.Column="1"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

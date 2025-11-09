@@ -1,0 +1,237 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="using:ProgramBox.Models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ProgramBox.Views.ApplicationsView"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}" Padding="24,16" 
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="应用程序管理" Classes="Title" Margin="0,0,0,8"/>
+                    <TextBlock Text="管理和快速启动常用应用程序" Classes="Body"/>
+                </StackPanel>
+
+                <TextBox Grid.Column="1" 
+                       x:Name="SearchBox"
+                       Watermark="搜索应用..."
+                       Width="250"
+                       Margin="16,0"
+                       VerticalAlignment="Center"
+                       TextChanged="SearchBox_TextChanged"/>
+
+                <Button Grid.Column="2" 
+                      Content="添加应用"
+                      Click="AddApplicationButton_Click"
+                      VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <TabControl Grid.Row="1">
+            <!-- Native Applications -->
+            <TabItem Header="本地应用">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="24">
+                        <!-- Applications List -->
+                        <ItemsControl x:Name="NativeApplicationsList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:NativeAtom">
+                                    <Border Classes="EnvironmentCard" Width="350" Height="100" Margin="8,4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Icon -->
+                                            <TextBlock Grid.Column="0" 
+                                                     Text="📦" 
+                                                     FontSize="48" 
+                                                     Margin="0,0,16,0"
+                                                     VerticalAlignment="Center"/>
+
+                                            <!-- Info -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" 
+                                                         FontSize="16" 
+                                                         FontWeight="SemiBold" 
+                                                         Foreground="{DynamicResource TextPrimaryBrush}"
+                                                         Margin="0,0,0,4"/>
+                                                <TextBlock Text="{Binding ExecPath}" 
+                                                         FontSize="12" 
+                                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                                         TextTrimming="CharacterEllipsis"
+                                                         ToolTip.Tip="{Binding ExecPath}"/>
+                                                <TextBlock Text="{Binding Description}" 
+                                                         FontSize="12" 
+                                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                                         TextTrimming="CharacterEllipsis"
+                                                         Margin="0,4,0,0"/>
+                                            </StackPanel>
+
+                                            <!-- Actions -->
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+                                                <Button Content="▶" 
+                                                      ToolTip.Tip="运行"
+                                                      Click="RunApplication_Click"
+                                                      Tag="{Binding}"
+                                                      Background="Transparent"
+                                                      BorderThickness="0"/>
+                                                <Button Content="📁" 
+                                                      ToolTip.Tip="在资源管理器中显示"
+                                                      Click="ShowInExplorer_Click"
+                                                      Tag="{Binding}"
+                                                      Background="Transparent"
+                                                      BorderThickness="0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Empty State -->
+                        <Border x:Name="NativeEmptyState" 
+                              Classes="Card" 
+                              IsVisible="False"
+                              HorizontalAlignment="Center"
+                              Padding="48"
+                              Margin="0,48,0,0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="📦" 
+                                         FontSize="64" 
+                                         Foreground="{DynamicResource TextSecondaryBrush}" 
+                                         HorizontalAlignment="Center"
+                                         Margin="0,0,0,16"/>
+                                <TextBlock Text="暂无本地应用程序" 
+                                         Classes="Subtitle" 
+                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                         TextAlignment="Center"
+                                         Margin="0,0,0,8"/>
+                                <TextBlock Text="点击 添加应用 开始管理您的应用程序" 
+                                         Classes="Body"
+                                         TextAlignment="Center"
+                                         Margin="0,0,0,16"/>
+                                <Button Content="添加应用"
+                                      Click="AddApplicationButton_Click"
+                                      HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Web Applications -->
+            <TabItem Header="Web应用">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="24">
+                        <!-- Web Applications List -->
+                        <ItemsControl x:Name="WebApplicationsList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:WebAtom">
+                                    <Border Classes="EnvironmentCard" Width="350" Height="100" Margin="8,4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Icon -->
+                                            <TextBlock Grid.Column="0" 
+                                                     Text="🌐" 
+                                                     FontSize="48" 
+                                                     Margin="0,0,16,0"
+                                                     VerticalAlignment="Center"/>
+
+                                            <!-- Info -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" 
+                                                         FontSize="16" 
+                                                         FontWeight="SemiBold" 
+                                                         Foreground="{DynamicResource TextPrimaryBrush}"
+                                                         Margin="0,0,0,4"/>
+                                                <TextBlock Text="{Binding Url}" 
+                                                         FontSize="12" 
+                                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                                         TextTrimming="CharacterEllipsis"
+                                                         ToolTip.Tip="{Binding Url}"/>
+                                                <TextBlock Text="{Binding Description}" 
+                                                         FontSize="12" 
+                                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                                         TextTrimming="CharacterEllipsis"
+                                                         Margin="0,4,0,0"/>
+                                            </StackPanel>
+
+                                            <!-- Actions -->
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+                                                <Button Content="🔗" 
+                                                      ToolTip.Tip="打开"
+                                                      Click="OpenWebApplication_Click"
+                                                      Tag="{Binding}"
+                                                      Background="Transparent"
+                                                      BorderThickness="0"/>
+                                                <Button Content="🗑" 
+                                                      ToolTip.Tip="删除"
+                                                      Click="DeleteWebApplication_Click"
+                                                      Tag="{Binding}"
+                                                      Background="Transparent"
+                                                      BorderThickness="0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Empty State -->
+                        <Border x:Name="WebEmptyState" 
+                              Classes="Card" 
+                              IsVisible="False"
+                              HorizontalAlignment="Center"
+                              Padding="48"
+                              Margin="0,48,0,0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="🌐" 
+                                         FontSize="64" 
+                                         Foreground="{DynamicResource TextSecondaryBrush}" 
+                                         HorizontalAlignment="Center"
+                                         Margin="0,0,0,16"/>
+                                <TextBlock Text="暂无Web应用程序" 
+                                         Classes="Subtitle" 
+                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                         TextAlignment="Center"
+                                         Margin="0,0,0,8"/>
+                                <TextBlock Text="点击 添加应用 开始管理您的Web应用" 
+                                         Classes="Body"
+                                         TextAlignment="Center"
+                                         Margin="0,0,0,16"/>
+                                <Button Content="添加Web应用"
+                                      Click="AddWebApplicationButton_Click"
+                                      HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

@@ -1,0 +1,120 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ProgramBox.App"
+             RequestedThemeVariant="Light">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Styles>
+        <FluentTheme />
+        
+        <!-- Custom Styles -->
+        <Style>
+            <!-- Global Colors -->
+            <Style.Resources>
+                <SolidColorBrush x:Key="PrimaryBrush" Color="#673AB7"/>
+                <SolidColorBrush x:Key="PrimaryLightBrush" Color="#9C27B0"/>
+                <SolidColorBrush x:Key="AccentBrush" Color="#CDDC39"/>
+                <SolidColorBrush x:Key="BackgroundBrush" Color="#FAFAFA"/>
+                <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
+                <SolidColorBrush x:Key="TextPrimaryBrush" Color="#212121"/>
+                <SolidColorBrush x:Key="TextSecondaryBrush" Color="#757575"/>
+                <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>
+            </Style.Resources>
+        </Style>
+        
+        <!-- Card Style -->
+        <Style Selector="Border.Card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="BoxShadow" Value="0 2 8 0 #19000000"/>
+        </Style>
+        
+        <!-- Title Text Style -->
+        <Style Selector="TextBlock.Title">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+        
+        <!-- Subtitle Text Style -->
+        <Style Selector="TextBlock.Subtitle">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+        
+        <!-- Body Text Style -->
+        <Style Selector="TextBlock.Body">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        
+        <!-- Section Header Style -->
+        <Style Selector="TextBlock.SectionHeader">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="Margin" Value="16,16,16,8"/>
+        </Style>
+        
+        <!-- Navigation Button Style -->
+        <Style Selector="Button.Navigation">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Margin" Value="4,2"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+        </Style>
+        
+        <Style Selector="Button.Navigation:pointerover">
+            <Setter Property="Background" Value="#F5F5F5"/>
+        </Style>
+        
+        <!-- Active Navigation Button Style -->
+        <Style Selector="Button.ActiveNavigation">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Margin" Value="4,2"/>
+            <Setter Property="Background" Value="#E8EAF6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        
+        <!-- Tool Card Style -->
+        <Style Selector="Border.ToolCard">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Width" Value="140"/>
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BoxShadow" Value="0 2 8 0 #19000000"/>
+        </Style>
+        
+        <Style Selector="Border.ToolCard:pointerover">
+            <Setter Property="Background" Value="#F5F5F5"/>
+        </Style>
+        
+        <!-- Environment Card Style -->
+        <Style Selector="Border.EnvironmentCard">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="8,4"/>
+            <Setter Property="MinHeight" Value="80"/>
+            <Setter Property="BoxShadow" Value="0 2 8 0 #19000000"/>
+        </Style>
+    </Application.Styles>
+</Application>
