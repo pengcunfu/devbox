@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Restore dependencies
+        run: dotnet restore
+        
+      - name: Build application
+        run: dotnet build --configuration Release --no-restore
+        
+      - name: Publish Windows x64
+        run: |
+          dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish/win-x64
+          
+      - name: Publish Windows x86
+        run: |
+          dotnet publish -c Release -r win-x86 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish/win-x86
+          
+      - name: Create zip archives
+        run: |
+          Compress-Archive -Path ./publish/win-x64/* -DestinationPath ./ProgramBox-win-x64.zip
+          Compress-Archive -Path ./publish/win-x86/* -DestinationPath ./ProgramBox-win-x86.zip
+          
+      - name: Get version
+        id: get_version
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "VERSION=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
+          }
+        shell: pwsh
+        
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+          files: |
+            ./ProgramBox-win-x64.zip
+            ./ProgramBox-win-x86.zip
+          body: |
+            ## ProgramBox ${{ steps.get_version.outputs.VERSION }}
+            
+            ### 下载说明
+            - **ProgramBox-win-x64.zip**: Windows 64位版本
+            - **ProgramBox-win-x86.zip**: Windows 32位版本
+            
+            ### 安装方法
+            1. 下载对应系统版本的压缩包
+            2. 解压到任意目录
+            3. 运行 ProgramBox.exe
+            
+            ### 更新内容
+            请查看提交历史了解详细更新内容。
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
