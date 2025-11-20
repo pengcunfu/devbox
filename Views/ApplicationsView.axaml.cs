@@ -53,46 +53,10 @@ namespace ProgramBox.Views
             WebEmptyState.IsVisible = _filteredWebApps.Count == 0;
         }
 
-        #region 搜索功能
+        #region 未使用的搜索功能 - 已移除搜索框
 
-        private void SearchBox_TextChanged(object? sender, TextChangedEventArgs e)
-        {
-            var searchText = SearchBox.Text?.ToLower() ?? string.Empty;
-            FilterApplications(searchText);
-        }
-
-        private void FilterApplications(string searchText)
-        {
-            // 过滤本地应用
-            _filteredNativeApps.Clear();
-            var filteredNative = string.IsNullOrWhiteSpace(searchText)
-                ? _allNativeApps
-                : _allNativeApps.Where(app =>
-                    app.Name.ToLower().Contains(searchText) ||
-                    app.ExecPath.ToLower().Contains(searchText) ||
-                    app.Description.ToLower().Contains(searchText));
-
-            foreach (var app in filteredNative)
-            {
-                _filteredNativeApps.Add(app);
-            }
-
-            // 过滤Web应用
-            _filteredWebApps.Clear();
-            var filteredWeb = string.IsNullOrWhiteSpace(searchText)
-                ? _allWebApps
-                : _allWebApps.Where(app =>
-                    app.Name.ToLower().Contains(searchText) ||
-                    app.Url.ToLower().Contains(searchText) ||
-                    app.Description.ToLower().Contains(searchText));
-
-            foreach (var app in filteredWeb)
-            {
-                _filteredWebApps.Add(app);
-            }
-
-            UpdateEmptyStates();
-        }
+        // SearchBox has been removed from the UI
+        // Keeping filter functionality for potential future use
 
         #endregion
 

@@ -7,44 +7,8 @@
              x:Class="ProgramBox.Views.ApplicationsView"
              Background="{DynamicResource BackgroundBrush}">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!-- Header -->
-        <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}" Padding="24,16" 
-                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="应用程序管理" Classes="Title" Margin="0,0,0,8"/>
-                    <TextBlock Text="管理和快速启动常用应用程序" Classes="Body"/>
-                </StackPanel>
-
-                <TextBox Grid.Column="1" 
-                       x:Name="SearchBox"
-                       Watermark="搜索应用..."
-                       Width="250"
-                       Margin="16,0"
-                       VerticalAlignment="Center"
-                       TextChanged="SearchBox_TextChanged"/>
-
-                <Button Grid.Column="2" 
-                      Content="添加应用"
-                      Click="AddApplicationButton_Click"
-                      VerticalAlignment="Center"/>
-            </Grid>
-        </Border>
-
-        <!-- Content -->
-        <TabControl Grid.Row="1">
+    <!-- Tab Content Only - Header and Container Removed -->
+    <TabControl>
             <!-- Native Applications -->
             <TabItem Header="本地应用">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -232,6 +196,5 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-        </TabControl>
-    </Grid>
+    </TabControl>
 </UserControl>

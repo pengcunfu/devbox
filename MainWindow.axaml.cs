@@ -18,8 +18,7 @@ namespace ProgramBox
             _dataManager = new JsonDataManager();
             LoadData();
             
-            // 设置默认选中的按钮
-            SetActiveButton(DevelopmentToolsButton);
+            // No navigation buttons - directly show applications
         }
 
         /// <summary>
@@ -29,8 +28,8 @@ namespace ProgramBox
         {
             try
             {
-                // 显示开发环境
-                ShowDevelopmentTools();
+                // 显示应用程序
+                ShowApplications();
             }
             catch (Exception ex)
             {
@@ -60,26 +59,6 @@ namespace ProgramBox
         }
 
         /// <summary>
-        /// 显示开发工具
-        /// </summary>
-        private void ShowDevelopmentTools()
-        {
-            var view = new DevelopmentToolsView(_dataManager);
-            ContentArea.Content = view;
-            DefaultContent.IsVisible = false;
-        }
-
-        /// <summary>
-        /// 显示系统工具
-        /// </summary>
-        private void ShowSystemTools()
-        {
-            var view = new SystemToolsView(_dataManager);
-            ContentArea.Content = view;
-            DefaultContent.IsVisible = false;
-        }
-
-        /// <summary>
         /// 显示应用程序
         /// </summary>
         private void ShowApplications()
@@ -98,47 +77,16 @@ namespace ProgramBox
             settingsWindow.ShowDialog(this);
         }
 
-        #region 事件处理
-
-        private void CategoryButton_Click(object? sender, RoutedEventArgs e)
-        {
-            if (sender is Button button)
-            {
-                SetActiveButton(button);
-                
-                var tag = button.Tag?.ToString();
-                switch (tag)
-                {
-                    case "development":
-                        ShowDevelopmentTools();
-                        StatusText.Text = "开发环境管理";
-                        break;
-                    case "system":
-                        ShowSystemTools();
-                        StatusText.Text = "系统工具";
-                        break;
-                    case "applications":
-                        ShowApplications();
-                        StatusText.Text = "应用程序管理";
-                        break;
-                }
-            }
-        }
+        #region 事件处理 - Simplified without navigation
 
         private void SettingsButton_Click(object? sender, RoutedEventArgs e)
         {
             OpenSettings();
         }
 
-        private void MinimizeButton_Click(object? sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
         private void GetStartedButton_Click(object? sender, RoutedEventArgs e)
         {
-            SetActiveButton(DevelopmentToolsButton);
-            ShowDevelopmentTools();
+            ShowApplications();
         }
 
         private void ViewDocumentationButton_Click(object? sender, RoutedEventArgs e)
@@ -148,20 +96,76 @@ namespace ProgramBox
 
         private void DevelopmentCard_Click(object? sender, PointerPressedEventArgs e)
         {
-            SetActiveButton(DevelopmentToolsButton);
-            ShowDevelopmentTools();
+            ShowApplications();
         }
 
         private void SystemCard_Click(object? sender, PointerPressedEventArgs e)
         {
-            SetActiveButton(SystemToolsButton);
-            ShowSystemTools();
+            ShowApplications();
         }
 
         private void ApplicationCard_Click(object? sender, PointerPressedEventArgs e)
         {
-            SetActiveButton(ApplicationsButton);
             ShowApplications();
+        }
+
+        #endregion
+
+        #region 菜单事件处理
+
+        /// <summary>
+        /// 设置菜单项点击
+        /// </summary>
+        private void SettingsMenuItem_Click(object? sender, RoutedEventArgs e)
+        {
+            OpenSettings();
+        }
+
+        /// <summary>
+        /// 退出菜单项点击
+        /// </summary>
+        private void ExitMenuItem_Click(object? sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        /// <summary>
+        /// 查看应用程序菜单项点击
+        /// </summary>
+        private void ViewApplicationsMenuItem_Click(object? sender, RoutedEventArgs e)
+        {
+            ShowApplications();
+        }
+
+        /// <summary>
+        /// 系统工具菜单项点击
+        /// </summary>
+        private void ToolMenuItem_Click(object? sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menuItem && menuItem.Tag is string toolKey)
+            {
+                try
+                {
+                    WindowsToolsHelper.ExecuteWindowsTool(toolKey);
+                    StatusText.Text = $"正在启动 {menuItem.Header}...";
+                }
+                catch (Exception ex)
+                {
+                    _ = AppHelper.ShowErrorAsync($"启动工具失败: {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 关于菜单项点击
+        /// </summary>
+        private void AboutMenuItem_Click(object? sender, RoutedEventArgs e)
+        {
+            _ = AppHelper.ShowInfoAsync(
+                "ProgramBox v2.0.0\n" +
+                "编程环境管理工具\n\n" +
+                "专为程序员设计的多语言开发环境管理工具\n" +
+                "支持 Java, Node.js, Python, C++ 等多种开发环境");
         }
 
         #endregion
