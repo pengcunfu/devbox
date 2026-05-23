@@ -7,7 +7,7 @@ ProgramBox 是一款专为程序员设计的多语言开发环境管理工具，
 本项目从 WPF 迁移到 Avalonia UI，保留了所有原有功能：
 
 ### 技术栈
-- **.NET 8.0**: 现代化的 .NET 平台
+- **.NET 10.0**: 现代化的 .NET 平台
 - **Avalonia UI 11.3.6**: 跨平台 UI 框架
 - **Newtonsoft.Json**: JSON 数据序列化
 
@@ -60,7 +60,8 @@ ProgramBox/
 ## 📋 系统要求
 
 - **操作系统**: Windows 10 或更高版本
-- **.NET 版本**: .NET 8.0 或更高版本
+- **.NET 版本**: .NET 10.0 SDK
+- **IDE**: Visual Studio 2026（推荐）
 - **内存**: 最少 512MB RAM
 - **磁盘空间**: 最少 100MB 可用空间
 
