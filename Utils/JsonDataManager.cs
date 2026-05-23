@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using ProgramBox.Models;
 
@@ -142,6 +143,15 @@ namespace ProgramBox.Utils
         {
             Data.NativeAtomList.Remove(atom);
             Save();
+        }
+
+        /// <summary>
+        /// 按可执行路径查找本地应用
+        /// </summary>
+        public NativeAtom? FindNativeByExecPath(string execPath)
+        {
+            return Data.NativeAtomList.FirstOrDefault(a =>
+                NativeAppHelper.IsSameExecutable(a.ExecPath, execPath));
         }
     }
 

@@ -1,5 +1,6 @@
 name: Release
 
+# 发版前请同步：VERSION、DevBox.csproj（Version 等）、CHANGELOG.md，再打标签 vX.Y.Z
 on:
   push:
     tags:
@@ -7,9 +8,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release tag (e.g. v1.0.0)'
+        description: 'Release tag（须与 VERSION 一致，如 v1.0.0）'
         required: true
         default: 'v1.0.0'
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -20,20 +25,87 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Resolve version
+      - name: Resolve and validate version
         id: version
         shell: pwsh
         run: |
+          function Fail([string]$Message) {
+            Write-Error $Message
+            exit 1
+          }
+
           if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
-            $tag = '${{ github.event.inputs.version }}'
+            $tag = '${{ github.event.inputs.version }}'.Trim()
           } else {
             $tag = '${{ github.ref_name }}'
           }
+
           if ($tag -notmatch '^v') { $tag = "v$tag" }
-          $semver = $tag.TrimStart('v')
+          $semver = $tag.Substring(1)
+
+          if ($semver -notmatch '^\d+\.\d+\.\d+([-.][\w.-]+)?$') {
+            Fail "Invalid version '$semver'. Use semver: X.Y.Z or X.Y.Z-prerelease"
+          }
+
+          if (-not (Test-Path VERSION)) {
+            Fail 'Missing VERSION file at repository root.'
+          }
+          $versionFile = (Get-Content VERSION -Raw).Trim()
+          if ($versionFile -ne $semver) {
+            Fail @"
+          Version mismatch:
+            Git tag:     $tag ($semver)
+            VERSION:     $versionFile
+
+          Before releasing, set VERSION, DevBox.csproj <Version>, and CHANGELOG ## [$semver], then commit and tag again.
+          "@
+          }
+
+          $csproj = Get-Content DevBox.csproj -Raw
+          if ($csproj -notmatch '<Version>\s*([^\s<]+)\s*</Version>') {
+            Fail 'Could not parse <Version> from DevBox.csproj'
+          }
+          $csprojVersion = $Matches[1]
+          if ($csprojVersion -ne $semver) {
+            Fail @"
+          Version mismatch:
+            Git tag:           $semver
+            DevBox.csproj: $csprojVersion
+
+          Update <Version> in DevBox.csproj to match the tag.
+          "@
+          }
+
+          if ($semver -match '^(\d+)\.(\d+)\.(\d+)') {
+            $assemblyVersion = "$($Matches[1]).$($Matches[2]).$($Matches[3]).0"
+          } else {
+            $assemblyVersion = "$semver.0"
+          }
+
+          $isPrerelease = $semver -match '[-.]'
+          $prereleaseFlag = if ($isPrerelease) { 'true' } else { 'false' }
+
           "tag=$tag" >> $env:GITHUB_OUTPUT
           "semver=$semver" >> $env:GITHUB_OUTPUT
+          "assembly_version=$assemblyVersion" >> $env:GITHUB_OUTPUT
+          "is_prerelease=$prereleaseFlag" >> $env:GITHUB_OUTPUT
+
+          Write-Host "Release version: $tag (assembly: $assemblyVersion, prerelease: $isPrerelease)"
+
+      - name: Verify CHANGELOG entry
+        shell: pwsh
+        run: |
+          $semver = '${{ steps.version.outputs.semver }}'
+          $changelog = Get-Content CHANGELOG.md -Raw
+          $escaped = [regex]::Escape($semver)
+          if ($changelog -notmatch "## \[$escaped\]") {
+            Write-Error "CHANGELOG.md has no '## [$semver]' section. Add release notes before tagging."
+            exit 1
+          }
+          Write-Host "✓ CHANGELOG contains ## [$semver]"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -42,51 +114,81 @@ jobs:
 
       - name: Publish Windows x64
         run: |
-          dotnet publish ProgramBox.csproj `
+          dotnet publish DevBox.csproj `
             -c Release `
             -r win-x64 `
             --self-contained true `
             -p:PublishSingleFile=true `
             -p:IncludeNativeLibrariesForSelfExtract=true `
             -p:Version=${{ steps.version.outputs.semver }} `
+            -p:AssemblyVersion=${{ steps.version.outputs.assembly_version }} `
+            -p:FileVersion=${{ steps.version.outputs.assembly_version }} `
             -p:InformationalVersion=${{ steps.version.outputs.semver }} `
             -o ./publish/win-x64
 
-      - name: Create zip
+      - name: Verify built executable version
         shell: pwsh
         run: |
-          $zip = "ProgramBox-${{ steps.version.outputs.semver }}-win-x64.zip"
-          Compress-Archive -Path ./publish/win-x64/* -DestinationPath "./$zip" -Force
-          "zip=$zip" >> $env:GITHUB_OUTPUT
-        id: zip
+          $expected = '${{ steps.version.outputs.semver }}'
+          $exe = Join-Path $PWD 'publish/win-x64/DevBox.exe'
+          if (-not (Test-Path $exe)) {
+            Write-Error "DevBox.exe not found at $exe"
+            exit 1
+          }
+          $info = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($exe)
+          $product = $info.ProductVersion
+          if ($product -notlike "$expected*") {
+            Write-Error "Built exe ProductVersion is '$product', expected '$expected'"
+            exit 1
+          }
+          Write-Host "✓ DevBox.exe ProductVersion: $product"
 
-      - name: Extract release notes
-        id: notes
+      - name: Create zip archive
+        id: zip
+        shell: pwsh
+        run: |
+          $semver = '${{ steps.version.outputs.semver }}'
+          $zip = "ProgramBox-$semver-win-x64.zip"
+          if (Test-Path $zip) { Remove-Item $zip -Force }
+          Compress-Archive -Path ./publish/win-x64/* -DestinationPath "./$zip"
+          "path=$zip" >> $env:GITHUB_OUTPUT
+          Write-Host "✓ Created $zip"
+
+      - name: Build release notes
         shell: pwsh
         run: |
           $tag = '${{ steps.version.outputs.tag }}'
           $semver = '${{ steps.version.outputs.semver }}'
-          $body = @"
-          ## ProgramBox $tag
+          $repo = '${{ github.repository }}'
 
-          ### 下载
-          - **ProgramBox-$semver-win-x64.zip** — Windows 64 位，解压后运行 `ProgramBox.exe`
+          $lines = [System.Collections.Generic.List[string]]::new()
+          $lines.Add("## ProgramBox $tag")
+          $lines.Add('')
+          $lines.Add('### 下载')
+          $lines.Add("- **ProgramBox-$semver-win-x64.zip** — Windows 64 位（自包含，解压即用）")
+          $lines.Add('')
+          $lines.Add('### 安装')
+          $lines.Add("1. 在 [Releases](https://github.com/$repo/releases) 下载 zip")
+          $lines.Add('2. 解压到任意目录')
+          $lines.Add('3. 运行 `DevBox.exe`')
+          $lines.Add('')
+          $lines.Add("文档：<https://pengcunfu.github.io/devbox/> · 源码：<https://github.com/$repo>")
 
-          ### 安装
-          1. 在 [Releases](https://github.com/${{ github.repository }}/releases) 下载 zip
-          2. 解压到任意目录
-          3. 运行 `ProgramBox.exe`
-
-          详细说明见 [在线文档](https://pengcunfu.github.io/devbox/)。
-          "@
           if (Test-Path CHANGELOG.md) {
             $changelog = Get-Content CHANGELOG.md -Raw
-            if ($changelog -match "(?s)## \[$semver\][^\#]*") {
-              $section = $Matches[0].Trim()
-              $body += "`n`n### 更新内容`n$section"
+            $escaped = [regex]::Escape($semver)
+            if ($changelog -match "(?s)## \[$escaped\][^\r\n]*\r?\n(.*?)(?=\r?\n## \[|\z)") {
+              $section = $Matches[1].Trim()
+              if ($section) {
+                $lines.Add('')
+                $lines.Add('### 更新内容')
+                $lines.Add('')
+                $lines.Add($section)
+              }
             }
           }
-          $body | Out-File -FilePath release-notes.md -Encoding utf8
+
+          $lines -join "`n" | Out-File -FilePath release-notes.md -Encoding utf8NoBOM
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -94,8 +196,9 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag }}
           name: ProgramBox ${{ steps.version.outputs.tag }}
           body_path: release-notes.md
+          files: ${{ steps.zip.outputs.path }}
           draft: false
-          prerelease: false
-          files: ${{ steps.zip.outputs.zip }}
+          prerelease: ${{ steps.version.outputs.is_prerelease == 'true' }}
+          make_latest: ${{ steps.version.outputs.is_prerelease != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

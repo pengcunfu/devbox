@@ -113,6 +113,34 @@ namespace ProgramBox.Utils
         }
 
         /// <summary>
+        /// 启动可执行文件（GUI 程序）
+        /// </summary>
+        public static void LaunchExecutable(string execPath)
+        {
+            try
+            {
+                var fullPath = Path.GetFullPath(execPath);
+                if (!File.Exists(fullPath))
+                {
+                    _ = ShowErrorAsync($"找不到应用程序: {fullPath}");
+                    return;
+                }
+
+                var psi = new ProcessStartInfo
+                {
+                    FileName = fullPath,
+                    UseShellExecute = true,
+                    WorkingDirectory = Path.GetDirectoryName(fullPath) ?? Environment.CurrentDirectory
+                };
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                _ = ShowErrorAsync($"启动应用程序失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// 启动进程
         /// </summary>
         /// <param name="fileName">文件名或命令</param>

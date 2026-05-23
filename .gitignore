@@ -214,6 +214,8 @@ _pkginfo.txt
 # Application specific files
 data.json
 config.json
+icons/
+icons/
 *.log
 *.db
 *.sqlite

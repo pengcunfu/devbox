@@ -11,15 +11,32 @@ ProgramBox 通过 [GitHub Releases](https://github.com/pengcunfu/devbox/releases
 
 ## 维护者：如何发版
 
+版本以仓库内三处为**单一事实来源**，发版前必须一致：
+
+| 文件 | 字段 |
+|------|------|
+| `VERSION` | 纯文本，如 `1.0.0` |
+| `ProgramBox.csproj` | `<Version>`、`<AssemblyVersion>`、`<FileVersion>`、`<InformationalVersion>` |
+| `CHANGELOG.md` | `## [1.0.0] - YYYY-MM-DD` |
+
+Git 标签格式为 **`v` + 上述版本号**（例如 `v1.0.0`）。Release 工作流会校验：标签 ↔ `VERSION` ↔ `csproj` ↔ `CHANGELOG`，任一不一致则构建失败。
+
 ### 1. 更新版本与日志
 
-- 编辑 `VERSION` 与 `ProgramBox.csproj` 中的版本号
-- 在 `CHANGELOG.md` 的 `[Unreleased]` 下写好变更，并新增 `## [x.y.z] - 日期` 小节
+1. 将 `VERSION` 改为新版本号（如 `1.0.1`）
+2. 同步 `ProgramBox.csproj` 中所有版本属性（`AssemblyVersion` / `FileVersion` 一般为 `X.Y.Z.0`）
+3. 在 `CHANGELOG.md` 增加 `## [1.0.1] - 日期` 并写好变更说明
 
-### 2. 提交并打标签
+### 2. 本地校验（推荐）
+
+```powershell
+.\scripts\verify-version.ps1 -Tag v1.0.1
+```
+
+### 3. 提交并打标签
 
 ```bash
-git add .
+git add VERSION ProgramBox.csproj CHANGELOG.md
 git commit -m "chore: release v1.0.1"
 git tag v1.0.1
 git push origin master
@@ -28,16 +45,17 @@ git push origin v1.0.1
 
 推送以 `v` 开头的标签（`v*.*.*`）会触发 [release.yml](https://github.com/pengcunfu/devbox/blob/master/.github/workflows/release.yml)：
 
-- 在 `windows-latest` 上 `dotnet publish`（win-x64，自包含单文件）
-- 生成 `ProgramBox-<semver>-win-x64.zip`
-- 创建 GitHub Release 并上传附件
+1. 校验 `VERSION` / `csproj` / `CHANGELOG` 与标签一致
+2. `dotnet publish`（win-x64，自包含单文件，版本号写入程序集）
+3. 校验 `ProgramBox.exe` 的 `ProductVersion`
+4. 打包 `ProgramBox-<semver>-win-x64.zip` 并创建 GitHub Release（附 `CHANGELOG` 对应章节）
 
-### 3. 手动触发（可选）
+### 4. 手动触发（可选）
 
-Actions → **Release** → **Run workflow**，输入标签名如 `v1.0.0`。
+Actions → **Release** → **Run workflow**，输入标签如 `v1.0.0`（须与当前 `VERSION` 文件一致）。
 
 ::: warning
-`workflow_dispatch` 创建的 Release 使用输入的标签名；请与 `CHANGELOG` 版本一致。
+手动发版前请先提交版本号与 CHANGELOG 的修改；工作流不会自动改版本文件。
 :::
 
 ## 产物说明
