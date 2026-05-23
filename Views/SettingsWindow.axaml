@@ -2,10 +2,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        mc:Ignorable="d" d:DesignWidth="720" d:DesignHeight="480"
         x:Class="ProgramBox.Views.SettingsWindow"
         Title="设置"
-        Width="600" Height="500"
+        Width="720" Height="480"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource BackgroundBrush}">
     
@@ -18,7 +18,8 @@
                 <StackPanel Spacing="16">
                     <TextBlock Text="常规设置" Classes="Subtitle"/>
                     
-                    <CheckBox x:Name="TrayIconCheckBox" Content="显示托盘图标"/>
+                    <CheckBox x:Name="TrayIconCheckBox"
+                              Content="启用托盘（关闭窗口时隐藏到托盘，不退出程序）"/>
                     <CheckBox x:Name="SelfStartingCheckBox" Content="开机自启动"/>
                     
                     <StackPanel Spacing="8">

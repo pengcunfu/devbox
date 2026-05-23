@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using ProgramBox.Utils;
@@ -62,6 +64,14 @@ namespace ProgramBox.Views
             
             // 设置开机自启动
             AppHelper.SetAutoStart(config.SelfStarting);
+
+            TrayIconService.ApplyTraySetting(config.TrayIcon);
+
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+                && desktop.MainWindow is MainWindow mainWindow)
+            {
+                mainWindow.RefreshTraySettings();
+            }
             
             _dataManager.Save();
         }

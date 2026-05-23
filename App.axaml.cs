@@ -1,6 +1,8 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using ProgramBox.Utils;
 
 namespace ProgramBox
 {
@@ -15,7 +17,12 @@ namespace ProgramBox
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow();
+                // 必须尽早设置：否则隐藏主窗口会导致整个进程退出
+                desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+                var mainWindow = new MainWindow();
+                desktop.MainWindow = mainWindow;
+                mainWindow.InitializeTray();
             }
 
             base.OnFrameworkInitializationCompleted();

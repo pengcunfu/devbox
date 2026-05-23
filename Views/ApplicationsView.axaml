@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="using:ProgramBox.Models"
              xmlns:converters="using:ProgramBox.Converters"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="480"
              x:Class="ProgramBox.Views.ApplicationsView"
              Background="{DynamicResource BackgroundBrush}">
 

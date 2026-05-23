@@ -20,7 +20,7 @@
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
-| `TrayIcon` | bool | 是否显示托盘图标 |
+| `TrayIcon` | bool | 启用托盘；关闭窗口时隐藏到托盘后台运行（无边框窗口右上角 ✕ 与 Alt+F4 均生效） |
 | `SelfStarting` | bool | 是否开机自启（写入注册表 Run 项） |
 | `BaseEnvPath` | string | 开发环境根目录 |
 | `Language` | string | 界面语言，如 `zh-CN` |

@@ -18,8 +18,53 @@ namespace ProgramBox
             _dataManager = new JsonDataManager();
             VersionText.Text = $"版本 {VersionInfo.Current}";
             LoadData();
-            
-            // No navigation buttons - directly show applications
+            Closing += MainWindow_Closing;
+        }
+
+        public void InitializeTray()
+        {
+            RefreshTraySettings();
+        }
+
+        public void RefreshTraySettings()
+        {
+            var trayEnabled = IsTrayEnabled();
+            TrayIconService.ApplyTraySetting(trayEnabled);
+            UpdateCloseButtonHint(trayEnabled);
+        }
+
+        private bool IsTrayEnabled() => _dataManager.Data.Config.TrayIcon;
+
+        private void UpdateCloseButtonHint(bool trayEnabled)
+        {
+            ToolTip.SetTip(CloseWindowButton, trayEnabled ? "关闭到托盘" : "退出程序");
+        }
+
+        private void MainWindow_Closing(object? sender, WindowClosingEventArgs e)
+        {
+            if (TrayIconService.IsExiting)
+                return;
+
+            if (IsTrayEnabled())
+            {
+                e.Cancel = true;
+                TrayIconService.HideMainWindow();
+            }
+        }
+
+        private void TitleBar_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (e.Source is Button)
+                return;
+
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+                BeginMoveDrag(e);
+        }
+
+        private void CloseWindowButton_Click(object? sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            TrayIconService.RequestClose(IsTrayEnabled());
         }
 
         /// <summary>
@@ -127,7 +172,7 @@ namespace ProgramBox
         /// </summary>
         private void ExitMenuItem_Click(object? sender, RoutedEventArgs e)
         {
-            Close();
+            TrayIconService.ExitApplication();
         }
 
         /// <summary>

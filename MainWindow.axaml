@@ -2,24 +2,58 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="440" d:DesignHeight="520"
+        mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
         x:Class="ProgramBox.MainWindow"
-        Title="ProgramBox - 编程环境管理工具"
-        Width="440" Height="520"
-        MinWidth="380" MinHeight="400"
+        Title="DevBox"
+        Width="960" Height="540"
+        MinWidth="800" MinHeight="480"
         WindowStartupLocation="CenterScreen"
-        Background="{DynamicResource BackgroundBrush}">
+        Background="{DynamicResource BackgroundBrush}"
+        SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome">
     
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="32"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- 自定义标题栏（仅关闭，无最小化/最大化） -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource PrimaryBrush}"
+                PointerPressed="TitleBar_PointerPressed">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="DevBox"
+                           Foreground="White"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           Margin="12,0,0,0"/>
+                <Button Grid.Column="1"
+                        x:Name="CloseWindowButton"
+                        Classes="TitleBarClose"
+                        Content="✕"
+                        ToolTip.Tip="关闭到托盘"
+                        Click="CloseWindowButton_Click"
+                        Width="46"
+                        Height="32"
+                        Padding="0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="White"
+                        FontSize="14"
+                        CornerRadius="0"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"/>
+            </Grid>
+        </Border>
+
         <!-- Menu Bar -->
-        <Menu Grid.Row="0" Background="{DynamicResource SurfaceBrush}">
+        <Menu Grid.Row="1" Background="{DynamicResource SurfaceBrush}">
             <!-- File Menu -->
             <MenuItem Header="_文件">
                 <MenuItem Header="_设置" Click="SettingsMenuItem_Click"/>
@@ -87,7 +121,7 @@
         <!-- Header removed as requested -->
 
         <!-- Main Content -->
-        <Grid Grid.Row="2" Background="{DynamicResource BackgroundBrush}">
+        <Grid Grid.Row="2" Background="{DynamicResource BackgroundBrush}" Margin="0">
                 <ContentControl x:Name="ContentArea"/>
                 
                 <!-- Default Content -->
@@ -96,7 +130,7 @@
                         <!-- Welcome Section -->
                         <Border Classes="Card" Margin="0,0,0,16">
                             <StackPanel>
-                                <TextBlock Text="欢迎使用 ProgramBox" Classes="Title"/>
+                                <TextBlock Text="欢迎使用 DevBox" Classes="Title"/>
                                 <TextBlock Text="专为程序员设计的多语言开发环境管理工具" Classes="Body" Margin="0,0,0,16"/>
                                 <StackPanel Orientation="Horizontal" Spacing="16">
                                     <Button Content="开始使用" Click="GetStartedButton_Click"/>

@@ -107,6 +107,14 @@
             <Setter Property="Background" Value="#F5F5F5"/>
         </Style>
         
+        <!-- 无边框窗口关闭按钮 -->
+        <Style Selector="Button.TitleBarClose:pointerover">
+            <Setter Property="Background" Value="#C62828"/>
+        </Style>
+        <Style Selector="Button.TitleBarClose:pressed">
+            <Setter Property="Background" Value="#B71C1C"/>
+        </Style>
+
         <!-- Environment Card Style -->
         <Style Selector="Border.EnvironmentCard">
             <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
