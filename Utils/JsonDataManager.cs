@@ -136,6 +136,11 @@ namespace ProgramBox.Utils
             Save();
         }
 
+        public WebAtom? FindWebByUrl(string url)
+        {
+            return Data.WebAtomList.FirstOrDefault(w => WebShortcutHelper.IsSameUrl(w.Url, url));
+        }
+
         /// <summary>
         /// 移除本地应用
         /// </summary>

@@ -396,7 +396,22 @@ namespace ProgramBox.Views
 
         #endregion
 
-        #region Web应用
+        #region 网站快捷方式
+
+        private void WebCard_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (e.Source is Button)
+                return;
+
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+                return;
+
+            if (sender is Border { Tag: WebAtom app })
+            {
+                OpenWebApplication(app);
+                e.Handled = true;
+            }
+        }
 
         private void OpenWebApplication_Click(object? sender, RoutedEventArgs e)
         {
@@ -404,37 +419,107 @@ namespace ProgramBox.Views
                 OpenWebApplication(app);
         }
 
-        private void DeleteWebApplication_Click(object? sender, RoutedEventArgs e)
+        private async void EditWebApplication_Click(object? sender, RoutedEventArgs e)
         {
-            if (sender is Button { Tag: WebAtom app })
-                DeleteWebApplication(app);
+            if (sender is not Button { Tag: WebAtom app })
+                return;
+
+            var owner = TopLevel.GetTopLevel(this) as Window;
+            var dialog = new WebEditWindow(app);
+            if (owner != null)
+                await dialog.ShowDialog(owner);
+            else
+                dialog.Show();
+
+            if (dialog.Saved)
+            {
+                _dataManager.Save();
+                RefreshWebList();
+            }
         }
 
-        private void AddWebApplicationButton_Click(object? sender, RoutedEventArgs e)
-            => _ = AppHelper.ShowInfoAsync("添加 Web 应用功能正在开发中...");
+        private void RefreshWebList()
+        {
+            var snapshot = _filteredWebApps.ToList();
+            _filteredWebApps.Clear();
+            foreach (var item in snapshot)
+                _filteredWebApps.Add(item);
+        }
+
+        private async void DeleteWebApplication_Click(object? sender, RoutedEventArgs e)
+        {
+            if (sender is not Button { Tag: WebAtom app })
+                return;
+
+            await DeleteWebApplication(app);
+        }
+
+        private async void AddWebApplicationButton_Click(object? sender, RoutedEventArgs e)
+        {
+            var owner = TopLevel.GetTopLevel(this) as Window;
+            var dialog = new WebAddWindow();
+            if (owner != null)
+                await dialog.ShowDialog(owner);
+            else
+                dialog.Show();
+
+            if (dialog.Result == null)
+                return;
+
+            await AddWebFromMetadataAsync(dialog.Result);
+        }
+
+        private async System.Threading.Tasks.Task AddWebFromMetadataAsync(WebMetadata meta)
+        {
+            try
+            {
+                var existing = _dataManager.FindWebByUrl(meta.Url);
+                if (existing != null)
+                {
+                    existing.Name = meta.Title;
+                    if (!string.IsNullOrEmpty(meta.IconPath))
+                        existing.IconPath = meta.IconPath;
+                    existing.Description = meta.Url;
+                    _dataManager.Save();
+                    await AppHelper.ShowInfoAsync($"已更新：{existing.Name}");
+                    RefreshWebList();
+                    return;
+                }
+
+                var atom = new WebAtom(meta.Title, meta.IconPath, "web", meta.Url, meta.Url);
+                _dataManager.AddWebAtom(atom);
+                _allWebApps.Add(atom);
+                _filteredWebApps.Add(atom);
+                UpdateEmptyStates();
+                await AppHelper.ShowInfoAsync($"已添加：{atom.Name}");
+            }
+            catch (Exception ex)
+            {
+                await AppHelper.ShowErrorAsync($"添加网站失败: {ex.Message}");
+            }
+        }
 
         private void OpenWebApplication(WebAtom app)
         {
             try
             {
-                AppHelper.OpenInBrowser(app.Url);
+                var url = WebShortcutHelper.NormalizeUrl(app.Url) ?? app.Url;
+                AppHelper.OpenInBrowser(url);
             }
             catch (Exception ex)
             {
-                _ = AppHelper.ShowErrorAsync($"打开Web应用失败: {ex.Message}");
+                _ = AppHelper.ShowErrorAsync($"打开网站失败: {ex.Message}");
             }
         }
 
-        private async void DeleteWebApplication(WebAtom app)
+        private async System.Threading.Tasks.Task DeleteWebApplication(WebAtom app)
         {
-            if (await AppHelper.ShowConfirmAsync($"确定要删除 {app.Name} 吗？"))
-            {
-                _dataManager.RemoveWebAtom(app);
-                _allWebApps.Remove(app);
-                _filteredWebApps.Remove(app);
-                UpdateEmptyStates();
-                await AppHelper.ShowInfoAsync("应用已删除");
-            }
+            IconCacheHelper.TryDeleteCachedIcon(app.IconPath);
+            _dataManager.RemoveWebAtom(app);
+            _allWebApps.Remove(app);
+            _filteredWebApps.Remove(app);
+            UpdateEmptyStates();
+            await AppHelper.ShowInfoAsync($"已移除 {app.Name}");
         }
 
         #endregion

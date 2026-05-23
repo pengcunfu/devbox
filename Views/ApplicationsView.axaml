@@ -254,46 +254,92 @@
             </ScrollViewer>
         </TabItem>
 
-        <TabItem Header="Web应用">
+        <TabItem Header="网站">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="16">
+                    <Border Classes="Card"
+                            MinHeight="72"
+                            Margin="0,0,0,12"
+                            BorderBrush="#1565C0"
+                            BorderThickness="2"
+                            CornerRadius="8"
+                            Background="#E3F2FD">
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="6"
+                                    Margin="16">
+                            <TextBlock Text="添加快捷网站，自动获取标题与图标"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#1565C0"
+                                       HorizontalAlignment="Center"/>
+                            <Button Content="添加网站..."
+                                    Click="AddWebApplicationButton_Click"
+                                    HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
                     <ItemsControl x:Name="WebApplicationsList">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="models:WebAtom">
-                                <Border Classes="EnvironmentCard" Width="350" Height="100" Margin="8,4">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
+                                <Border Classes="ToolCard"
+                                        Width="128"
+                                        Height="148"
+                                        Tag="{Binding}"
+                                        PointerPressed="WebCard_PointerPressed"
+                                        ToolTip.Tip="{Binding Url}">
+                                    <Grid RowDefinitions="Auto,*,Auto">
+                                        <Border Grid.Row="0"
+                                                Width="48"
+                                                Height="48"
+                                                CornerRadius="8"
+                                                Background="#EEEEEE"
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,6">
+                                            <Image Width="40"
+                                                   Height="40"
+                                                   Stretch="Uniform"
+                                                   Source="{Binding IconPath, Converter={StaticResource PathToBitmap}}"/>
+                                        </Border>
 
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <StackPanel Grid.Row="1" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Name}"
-                                                       FontSize="16"
+                                                       FontSize="13"
                                                        FontWeight="SemiBold"
                                                        Foreground="{DynamicResource TextPrimaryBrush}"
-                                                       Margin="0,0,0,4"/>
-                                            <TextBlock Text="{Binding Url}"
-                                                       FontSize="12"
-                                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       TextAlignment="Center"
                                                        TextTrimming="CharacterEllipsis"
-                                                       ToolTip.Tip="{Binding Url}"/>
+                                                       MaxWidth="112"/>
                                         </StackPanel>
 
-                                        <StackPanel Grid.Column="1"
+                                        <StackPanel Grid.Row="2"
                                                     Orientation="Horizontal"
-                                                    VerticalAlignment="Center"
-                                                    Spacing="4">
-                                            <Button Content="打开"
+                                                    HorizontalAlignment="Center"
+                                                    Spacing="4"
+                                                    Margin="0,6,0,0">
+                                            <Button Content="🌐"
+                                                    ToolTip.Tip="在浏览器中打开"
                                                     Click="OpenWebApplication_Click"
                                                     Tag="{Binding}"
-                                                    Padding="8,4"
-                                                    FontSize="12"/>
-                                            <Button Content="删除"
+                                                    Padding="6,2"
+                                                    FontSize="11"/>
+                                            <Button Content="✎"
+                                                    ToolTip.Tip="编辑标题与图标"
+                                                    Click="EditWebApplication_Click"
+                                                    Tag="{Binding}"
+                                                    Padding="6,2"
+                                                    FontSize="11"/>
+                                            <Button Content="✕"
+                                                    ToolTip.Tip="移除"
                                                     Click="DeleteWebApplication_Click"
                                                     Tag="{Binding}"
-                                                    Padding="8,4"
-                                                    FontSize="12"/>
+                                                    Padding="6,2"
+                                                    FontSize="11"/>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -308,14 +354,14 @@
                             Padding="32"
                             Margin="0,24,0,0">
                         <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="暂无Web应用程序"
+                            <TextBlock Text="暂无快捷网站"
                                        Classes="Subtitle"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        TextAlignment="Center"
                                        Margin="0,0,0,8"/>
-                            <Button Content="添加Web应用"
-                                    Click="AddWebApplicationButton_Click"
-                                    HorizontalAlignment="Center"/>
+                            <TextBlock Text="点击「添加网站」收藏常用网页"
+                                       Classes="Body"
+                                       TextAlignment="Center"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
