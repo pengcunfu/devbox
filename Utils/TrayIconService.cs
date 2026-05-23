@@ -1,7 +1,4 @@
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -20,12 +17,15 @@ namespace ProgramBox.Utils
 
         public static bool IsExiting => _isExiting;
 
+        /// <summary>
+        /// 启动时调用：绑定主窗口、设置图标、创建托盘。
+        /// </summary>
         public static void Initialize(MainWindow mainWindow, bool showTray)
         {
             _mainWindow = mainWindow;
             _isExiting = false;
-            mainWindow.Icon = CreateAppIcon();
 
+            ApplyWindowIcon(mainWindow);
             EnsureShutdownMode();
 
             DisposeTray();
@@ -35,8 +35,8 @@ namespace ProgramBox.Utils
 
         public static void ApplyTraySetting(bool enabled)
         {
-            if (_mainWindow == null)
-                return;
+            if (_mainWindow != null)
+                ApplyWindowIcon(_mainWindow);
 
             EnsureShutdownMode();
 
@@ -45,7 +45,10 @@ namespace ProgramBox.Utils
                 if (_trayIcon == null)
                     CreateTrayIcon();
                 else
+                {
                     _trayIcon.IsVisible = true;
+                    RefreshTrayIconImage();
+                }
             }
             else
             {
@@ -53,23 +56,22 @@ namespace ProgramBox.Utils
             }
         }
 
-        /// <summary>
-        /// 配置启用托盘时，确保托盘图标已创建（避免关闭按钮误退出）。
-        /// </summary>
         public static void EnsureTrayIcon()
         {
-            if (_mainWindow == null)
-                return;
-
             EnsureShutdownMode();
 
             if (_trayIcon == null)
                 CreateTrayIcon();
+            else
+                RefreshTrayIconImage();
         }
 
         public static void HideMainWindow()
         {
-            _mainWindow?.Hide();
+            if (_mainWindow == null)
+                return;
+
+            _mainWindow.Hide();
         }
 
         public static void ShowMainWindow()
@@ -82,9 +84,6 @@ namespace ProgramBox.Utils
             _mainWindow.Activate();
         }
 
-        /// <summary>
-        /// 用户点击关闭：启用托盘则仅隐藏窗口。
-        /// </summary>
         public static void RequestClose(bool trayEnabled)
         {
             if (trayEnabled)
@@ -106,6 +105,13 @@ namespace ProgramBox.Utils
                 desktop.Shutdown();
         }
 
+        private static void ApplyWindowIcon(Window window)
+        {
+            var icon = AppIconHelper.Load();
+            if (icon != null)
+                window.Icon = icon;
+        }
+
         private static void EnsureShutdownMode()
         {
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -117,9 +123,13 @@ namespace ProgramBox.Utils
             if (_trayIcon != null)
                 return;
 
+            var icon = AppIconHelper.LoadForTray();
+            if (icon == null)
+                return;
+
             _trayIcon = new TrayIcon
             {
-                Icon = CreateAppIcon(),
+                Icon = icon,
                 ToolTipText = "DevBox",
                 IsVisible = true
             };
@@ -137,6 +147,16 @@ namespace ProgramBox.Utils
             _trayIcon.Menu = menu;
         }
 
+        private static void RefreshTrayIconImage()
+        {
+            if (_trayIcon == null)
+                return;
+
+            var icon = AppIconHelper.LoadForTray();
+            if (icon != null)
+                _trayIcon.Icon = icon;
+        }
+
         private static void OnTrayClicked(object? sender, EventArgs e) => ShowMainWindow();
 
         private static void DisposeTray()
@@ -147,24 +167,6 @@ namespace ProgramBox.Utils
             _trayIcon.Clicked -= OnTrayClicked;
             _trayIcon.Dispose();
             _trayIcon = null;
-        }
-
-        private static WindowIcon CreateAppIcon()
-        {
-            using var bitmap = new Bitmap(32, 32);
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                g.Clear(Color.FromArgb(103, 58, 183));
-                using var brush = new SolidBrush(Color.White);
-                using var font = new Font("Segoe UI", 14, FontStyle.Bold, GraphicsUnit.Pixel);
-                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-                g.DrawString("D", font, brush, 7, 5);
-            }
-
-            using var stream = new MemoryStream();
-            bitmap.Save(stream, ImageFormat.Png);
-            stream.Position = 0;
-            return new WindowIcon(stream);
         }
     }
 }

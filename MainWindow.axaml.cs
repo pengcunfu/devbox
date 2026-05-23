@@ -23,7 +23,9 @@ namespace ProgramBox
 
         public void InitializeTray()
         {
-            RefreshTraySettings();
+            var trayEnabled = IsTrayEnabled();
+            TrayIconService.Initialize(this, trayEnabled);
+            UpdateCloseButtonHint(trayEnabled);
         }
 
         public void RefreshTraySettings()
@@ -54,17 +56,21 @@ namespace ProgramBox
 
         private void TitleBar_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (e.Source is Button)
-                return;
-
             if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
                 BeginMoveDrag(e);
         }
 
         private void CloseWindowButton_Click(object? sender, RoutedEventArgs e)
         {
-            e.Handled = true;
-            TrayIconService.RequestClose(IsTrayEnabled());
+            if (IsTrayEnabled())
+            {
+                TrayIconService.EnsureTrayIcon();
+                Hide();
+            }
+            else
+            {
+                TrayIconService.ExitApplication();
+            }
         }
 
         /// <summary>

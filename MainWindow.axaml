@@ -23,16 +23,18 @@
 
         <!-- 自定义标题栏（仅关闭，无最小化/最大化） -->
         <Border Grid.Row="0"
-                Background="{DynamicResource PrimaryBrush}"
-                PointerPressed="TitleBar_PointerPressed">
+                Background="{DynamicResource PrimaryBrush}">
             <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Grid.Column="0"
-                           Text="DevBox"
-                           Foreground="White"
-                           FontSize="13"
-                           FontWeight="SemiBold"
-                           VerticalAlignment="Center"
-                           Margin="12,0,0,0"/>
+                <Border Grid.Column="0"
+                        Background="Transparent"
+                        PointerPressed="TitleBar_PointerPressed">
+                    <TextBlock Text="DevBox"
+                               Foreground="White"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="12,0,0,0"/>
+                </Border>
                 <Button Grid.Column="1"
                         x:Name="CloseWindowButton"
                         Classes="TitleBarClose"

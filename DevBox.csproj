@@ -12,7 +12,15 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\icon.png" />
+    <AvaloniaResource Include="Resources\icon.ico" />
+    <Content Include="Resources\icon.png" CopyToOutputDirectory="PreserveNewest" Link="Resources\icon.png" />
+    <Content Include="Resources\icon.ico" CopyToOutputDirectory="PreserveNewest" Link="Resources\icon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.6" />
