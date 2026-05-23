@@ -138,6 +138,35 @@ namespace ProgramBox.Models
     }
 
     /// <summary>
+    /// 文件夹快捷方式（显示名为别名，不修改磁盘上的文件夹名称）
+    /// </summary>
+    public class FolderAtom : Atom
+    {
+        private string _folderPath = string.Empty;
+
+        /// <summary>
+        /// 文件夹实际路径
+        /// </summary>
+        public string FolderPath
+        {
+            get => _folderPath;
+            set
+            {
+                _folderPath = value;
+                OnPropertyChanged(nameof(FolderPath));
+            }
+        }
+
+        public FolderAtom() { }
+
+        public FolderAtom(string alias, string iconPath, string tag, string folderPath, string description = "")
+            : base(alias, iconPath, tag, description)
+        {
+            FolderPath = folderPath;
+        }
+    }
+
+    /// <summary>
     /// 内置工具原子类
     /// </summary>
     public class InsAtom : Atom

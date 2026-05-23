@@ -153,6 +153,24 @@ namespace ProgramBox.Utils
             return Data.NativeAtomList.FirstOrDefault(a =>
                 NativeAppHelper.IsSameExecutable(a.ExecPath, execPath));
         }
+
+        public void AddFolderAtom(FolderAtom atom)
+        {
+            Data.FolderAtomList.Add(atom);
+            Save();
+        }
+
+        public void RemoveFolderAtom(FolderAtom atom)
+        {
+            Data.FolderAtomList.Remove(atom);
+            Save();
+        }
+
+        public FolderAtom? FindFolderByPath(string folderPath)
+        {
+            return Data.FolderAtomList.FirstOrDefault(f =>
+                IconCacheHelper.IsSamePath(f.FolderPath, folderPath));
+        }
     }
 
     /// <summary>
@@ -165,6 +183,9 @@ namespace ProgramBox.Utils
 
         [JsonProperty]
         public ObservableCollection<NativeAtom> NativeAtomList { get; set; } = new();
+
+        [JsonProperty]
+        public ObservableCollection<FolderAtom> FolderAtomList { get; set; } = new();
 
         [JsonProperty]
         public ObservableCollection<InsAtom> InsAtomList { get; set; } = new();

@@ -1,12 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Runtime.Versioning;
-using System.Security.Cryptography;
-using System.Text;
 using ProgramBox.Models;
 
 namespace ProgramBox.Utils
@@ -17,8 +13,6 @@ namespace ProgramBox.Utils
     [SupportedOSPlatform("windows")]
     public static class NativeAppHelper
     {
-        public static string IconsDirectory => AppHelper.GetFullPath("icons");
-
         public static NativeAtom? CreateFromExecutable(string exePath)
         {
             if (string.IsNullOrWhiteSpace(exePath))
@@ -29,7 +23,7 @@ namespace ProgramBox.Utils
                 return null;
 
             var name = GetDisplayName(fullPath);
-            var iconPath = ExtractIconToCache(fullPath) ?? string.Empty;
+            var iconPath = ExtractExecutableIconToCache(fullPath) ?? string.Empty;
             var tag = Path.GetFileNameWithoutExtension(fullPath);
 
             return new NativeAtom(name, iconPath, tag, fullPath, fullPath);
@@ -53,26 +47,16 @@ namespace ProgramBox.Utils
             return Path.GetFileNameWithoutExtension(exePath);
         }
 
-        public static string? ExtractIconToCache(string exePath)
+        public static string? ExtractExecutableIconToCache(string exePath)
         {
             try
             {
-                Directory.CreateDirectory(IconsDirectory);
-
                 using var icon = Icon.ExtractAssociatedIcon(exePath);
                 if (icon == null)
                     return null;
 
-                var hash = ComputeHash(exePath);
-                var destPath = Path.Combine(IconsDirectory, $"{hash}.png");
-
-                if (!File.Exists(destPath))
-                {
-                    using var bitmap = icon.ToBitmap();
-                    bitmap.Save(destPath, ImageFormat.Png);
-                }
-
-                return destPath;
+                var cacheKey = $"exe_{IconCacheHelper.ComputeHash(exePath)}";
+                return IconCacheHelper.SaveIconToCache(icon, cacheKey);
             }
             catch
             {
@@ -81,42 +65,9 @@ namespace ProgramBox.Utils
         }
 
         public static void TryDeleteCachedIcon(string? iconPath)
-        {
-            if (string.IsNullOrWhiteSpace(iconPath))
-                return;
-
-            try
-            {
-                var full = Path.GetFullPath(iconPath);
-                var iconsRoot = Path.GetFullPath(IconsDirectory);
-                if (full.StartsWith(iconsRoot, StringComparison.OrdinalIgnoreCase) && File.Exists(full))
-                    File.Delete(full);
-            }
-            catch
-            {
-                // ignore
-            }
-        }
+            => IconCacheHelper.TryDeleteCachedIcon(iconPath);
 
         public static bool IsSameExecutable(string pathA, string pathB)
-        {
-            try
-            {
-                return string.Equals(
-                    Path.GetFullPath(pathA),
-                    Path.GetFullPath(pathB),
-                    StringComparison.OrdinalIgnoreCase);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private static string ComputeHash(string exePath)
-        {
-            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(Path.GetFullPath(exePath).ToLowerInvariant()));
-            return Convert.ToHexString(bytes)[..16].ToLowerInvariant();
-        }
+            => IconCacheHelper.IsSamePath(pathA, pathB);
     }
 }

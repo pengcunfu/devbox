@@ -134,6 +134,126 @@
             </ScrollViewer>
         </TabItem>
 
+        <TabItem Header="文件夹">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="16">
+                    <Border x:Name="FolderDropZone"
+                            Classes="Card"
+                            MinHeight="88"
+                            Margin="0,0,0,12"
+                            BorderBrush="#43A047"
+                            BorderThickness="2"
+                            CornerRadius="8"
+                            Background="#E8F5E9">
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="6"
+                                    Margin="16">
+                            <TextBlock Text="将文件夹拖放到此处"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2E7D32"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="可设置别名与自定义图标，单击打开文件夹"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       HorizontalAlignment="Center"/>
+                            <Button Content="选择文件夹..."
+                                    Click="BrowseFolderButton_Click"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ItemsControl x:Name="FolderShortcutsList">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:FolderAtom">
+                                <Border Classes="ToolCard"
+                                        Width="128"
+                                        Height="148"
+                                        Tag="{Binding}"
+                                        PointerPressed="FolderCard_PointerPressed"
+                                        ToolTip.Tip="{Binding FolderPath}">
+                                    <Grid RowDefinitions="Auto,*,Auto">
+                                        <Border Grid.Row="0"
+                                                Width="48"
+                                                Height="48"
+                                                CornerRadius="8"
+                                                Background="#EEEEEE"
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,6">
+                                            <Image Width="40"
+                                                   Height="40"
+                                                   Stretch="Uniform"
+                                                   Source="{Binding IconPath, Converter={StaticResource PathToBitmap}}"/>
+                                        </Border>
+
+                                        <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       TextAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       MaxWidth="112"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="2"
+                                                    Orientation="Horizontal"
+                                                    HorizontalAlignment="Center"
+                                                    Spacing="4"
+                                                    Margin="0,6,0,0">
+                                            <Button Content="📂"
+                                                    ToolTip.Tip="打开文件夹"
+                                                    Click="OpenFolder_Click"
+                                                    Tag="{Binding}"
+                                                    Padding="6,2"
+                                                    FontSize="11"/>
+                                            <Button Content="✎"
+                                                    ToolTip.Tip="编辑别名与图标"
+                                                    Click="EditFolder_Click"
+                                                    Tag="{Binding}"
+                                                    Padding="6,2"
+                                                    FontSize="11"/>
+                                            <Button Content="✕"
+                                                    ToolTip.Tip="移除"
+                                                    Click="DeleteFolder_Click"
+                                                    Tag="{Binding}"
+                                                    Padding="6,2"
+                                                    FontSize="11"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Border x:Name="FolderEmptyState"
+                            Classes="Card"
+                            IsVisible="False"
+                            HorizontalAlignment="Center"
+                            Padding="32"
+                            Margin="0,24,0,0">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="暂无文件夹快捷方式"
+                                       Classes="Subtitle"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       TextAlignment="Center"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="拖入文件夹，用于快速打开工作目录、文档、项目等"
+                                       Classes="Body"
+                                       TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
         <TabItem Header="Web应用">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="16">

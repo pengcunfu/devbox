@@ -18,6 +18,8 @@ namespace ProgramBox.Views
         private readonly ObservableCollection<NativeAtom> _filteredNativeApps;
         private readonly ObservableCollection<WebAtom> _allWebApps;
         private readonly ObservableCollection<WebAtom> _filteredWebApps;
+        private readonly ObservableCollection<FolderAtom> _allFolders;
+        private readonly ObservableCollection<FolderAtom> _filteredFolders;
 
         public ApplicationsView(JsonDataManager dataManager)
         {
@@ -26,6 +28,9 @@ namespace ProgramBox.Views
 
             _allNativeApps = new ObservableCollection<NativeAtom>(_dataManager.Data.NativeAtomList);
             _filteredNativeApps = new ObservableCollection<NativeAtom>(_allNativeApps);
+
+            _allFolders = new ObservableCollection<FolderAtom>(_dataManager.Data.FolderAtomList);
+            _filteredFolders = new ObservableCollection<FolderAtom>(_allFolders);
 
             _allWebApps = new ObservableCollection<WebAtom>(_dataManager.Data.WebAtomList);
             _filteredWebApps = new ObservableCollection<WebAtom>(_allWebApps);
@@ -39,11 +44,16 @@ namespace ProgramBox.Views
             DragDrop.SetAllowDrop(DropZone, true);
             DropZone.AddHandler(DragDrop.DragOverEvent, OnNativeDragOver, RoutingStrategies.Bubble);
             DropZone.AddHandler(DragDrop.DropEvent, OnNativeDrop, RoutingStrategies.Bubble);
+
+            DragDrop.SetAllowDrop(FolderDropZone, true);
+            FolderDropZone.AddHandler(DragDrop.DragOverEvent, OnFolderDragOver, RoutingStrategies.Bubble);
+            FolderDropZone.AddHandler(DragDrop.DropEvent, OnFolderDrop, RoutingStrategies.Bubble);
         }
 
         private void LoadApplications()
         {
             NativeApplicationsList.ItemsSource = _filteredNativeApps;
+            FolderShortcutsList.ItemsSource = _filteredFolders;
             WebApplicationsList.ItemsSource = _filteredWebApps;
             UpdateEmptyStates();
         }
@@ -51,6 +61,7 @@ namespace ProgramBox.Views
         private void UpdateEmptyStates()
         {
             NativeEmptyState.IsVisible = _filteredNativeApps.Count == 0;
+            FolderEmptyState.IsVisible = _filteredFolders.Count == 0;
             WebEmptyState.IsVisible = _filteredWebApps.Count == 0;
         }
 
@@ -157,6 +168,175 @@ namespace ProgramBox.Views
             {
                 await AppHelper.ShowErrorAsync($"添加应用失败: {ex.Message}");
             }
+        }
+
+        #endregion
+
+        #region 文件夹快捷方式
+
+        private void OnFolderDragOver(object? sender, DragEventArgs e)
+        {
+            if (HasDirectories(e))
+            {
+                e.DragEffects = DragDropEffects.Copy;
+                e.Handled = true;
+            }
+        }
+
+        private async void OnFolderDrop(object? sender, DragEventArgs e)
+        {
+            e.Handled = true;
+            foreach (var path in await GetDirectoryPathsFromDragAsync(e))
+                await AddFolderFromPathAsync(path);
+        }
+
+        private static bool HasDirectories(DragEventArgs e)
+        {
+            if (!e.Data.Contains(DataFormats.Files))
+                return false;
+
+            return e.Data.GetFiles()?.Any(f => Directory.Exists(f.Path.LocalPath)) == true;
+        }
+
+        private static async System.Threading.Tasks.Task<string[]> GetDirectoryPathsFromDragAsync(DragEventArgs e)
+        {
+            if (!e.Data.Contains(DataFormats.Files))
+                return Array.Empty<string>();
+
+            var files = e.Data.GetFiles();
+            if (files == null)
+                return Array.Empty<string>();
+
+            var list = new System.Collections.Generic.List<string>();
+            foreach (var file in files)
+            {
+                var path = file.Path.LocalPath;
+                if (Directory.Exists(path))
+                    list.Add(path);
+            }
+
+            return list.ToArray();
+        }
+
+        private async void BrowseFolderButton_Click(object? sender, RoutedEventArgs e)
+        {
+            var topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel == null)
+                return;
+
+            var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            {
+                Title = "选择文件夹",
+                AllowMultiple = true
+            });
+
+            foreach (var folder in folders)
+                await AddFolderFromPathAsync(folder.Path.LocalPath);
+        }
+
+        private async System.Threading.Tasks.Task AddFolderFromPathAsync(string folderPath)
+        {
+            try
+            {
+                var atom = FolderShortcutHelper.CreateFromDirectory(folderPath);
+                if (atom == null)
+                {
+                    await AppHelper.ShowErrorAsync("无法添加该路径，请选择有效的文件夹。");
+                    return;
+                }
+
+                var existing = _dataManager.FindFolderByPath(atom.FolderPath);
+                if (existing != null)
+                {
+                    existing.IconPath = string.IsNullOrEmpty(atom.IconPath) ? existing.IconPath : atom.IconPath;
+                    existing.Description = atom.FolderPath;
+                    _dataManager.Save();
+                    await AppHelper.ShowInfoAsync($"已存在，路径已更新：{existing.Name}");
+                    return;
+                }
+
+                _dataManager.AddFolderAtom(atom);
+                _allFolders.Add(atom);
+                _filteredFolders.Add(atom);
+                UpdateEmptyStates();
+                await AppHelper.ShowInfoAsync($"已添加：{atom.Name}");
+            }
+            catch (Exception ex)
+            {
+                await AppHelper.ShowErrorAsync($"添加文件夹失败: {ex.Message}");
+            }
+        }
+
+        private void FolderCard_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (e.Source is Button)
+                return;
+
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+                return;
+
+            if (sender is Border { Tag: FolderAtom folder })
+            {
+                OpenFolder(folder);
+                e.Handled = true;
+            }
+        }
+
+        private void OpenFolder_Click(object? sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: FolderAtom folder })
+                OpenFolder(folder);
+        }
+
+        private async void EditFolder_Click(object? sender, RoutedEventArgs e)
+        {
+            if (sender is not Button { Tag: FolderAtom folder })
+                return;
+
+            var owner = TopLevel.GetTopLevel(this) as Window;
+            var dialog = new FolderEditWindow(folder);
+            if (owner != null)
+                await dialog.ShowDialog(owner);
+            else
+                dialog.Show();
+
+            if (dialog.Saved)
+            {
+                _dataManager.Save();
+                RefreshFolderList();
+            }
+        }
+
+        private void RefreshFolderList()
+        {
+            var snapshot = _filteredFolders.ToList();
+            _filteredFolders.Clear();
+            foreach (var item in snapshot)
+                _filteredFolders.Add(item);
+        }
+
+        private async void DeleteFolder_Click(object? sender, RoutedEventArgs e)
+        {
+            if (sender is not Button { Tag: FolderAtom folder })
+                return;
+
+            IconCacheHelper.TryDeleteCachedIcon(folder.IconPath);
+            _dataManager.RemoveFolderAtom(folder);
+            _allFolders.Remove(folder);
+            _filteredFolders.Remove(folder);
+            UpdateEmptyStates();
+            await AppHelper.ShowInfoAsync($"已移除 {folder.Name}");
+        }
+
+        private void OpenFolder(FolderAtom folder)
+        {
+            if (!Directory.Exists(folder.FolderPath))
+            {
+                _ = AppHelper.ShowErrorAsync($"文件夹不存在: {folder.FolderPath}");
+                return;
+            }
+
+            AppHelper.OpenInExplorer(folder.FolderPath);
         }
 
         #endregion
