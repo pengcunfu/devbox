@@ -1,11 +1,13 @@
 import { defineConfig } from 'vitepress'
 
-// GitHub Pages 项目站点：https://<user>.github.io/<repo>/
-const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? 'programbox'
+// GitHub Pages 项目站点：https://pengcunfu.github.io/devbox/
+const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? 'devbox'
+const repo = 'pengcunfu/devbox'
+const defaultBranch = 'master'
 
 export default defineConfig({
   title: 'ProgramBox',
-  description: 'Windows 开发环境管理工具',
+  description: 'Windows 开发环境管理工具（开源 MIT）',
   lang: 'zh-CN',
   base: `/${repoName}/`,
   cleanUrls: true,
@@ -18,7 +20,7 @@ export default defineConfig({
       { text: '下载', link: '/guide/releases' },
       {
         text: 'GitHub',
-        link: 'https://github.com/programbox/programbox',
+        link: `https://github.com/${repo}`,
       },
     ],
     sidebar: [
@@ -27,6 +29,7 @@ export default defineConfig({
         items: [
           { text: '什么是 ProgramBox', link: '/' },
           { text: '快速开始', link: '/guide/getting-started' },
+          { text: '开源协议', link: '/guide/license' },
         ],
       },
       {
@@ -47,16 +50,15 @@ export default defineConfig({
     socialLinks: [
       {
         icon: 'github',
-        link: 'https://github.com/programbox/programbox',
+        link: `https://github.com/${repo}`,
       },
     ],
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © ProgramBox',
+      copyright: 'Copyright © pengcunfu',
     },
     editLink: {
-      pattern:
-        'https://github.com/programbox/programbox/edit/main/docs/:path',
+      pattern: `https://github.com/${repo}/edit/${defaultBranch}/docs/:path`,
       text: '在 GitHub 上编辑此页',
     },
   },

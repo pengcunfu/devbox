@@ -2,7 +2,7 @@
 
 ## 下载
 
-1. 打开 [GitHub Releases](https://github.com/programbox/programbox/releases/latest)
+1. 打开 [GitHub Releases](https://github.com/pengcunfu/devbox/releases/latest)
 2. 下载 **ProgramBox-&lt;version&gt;-win-x64.zip**（Windows 64 位）
 3. 解压到任意目录（建议路径不含中文与空格）
 
@@ -31,9 +31,10 @@
 自包含单文件发布可能被误报，可添加信任或使用 [从源码构建](./build.md) 自行编译。
 
 **需要 32 位版本？**  
-当前 Release 仅提供 win-x64；如有需求可在 Issues 中反馈。
+当前 Release 仅提供 win-x64；如有需求可在 [Issues](https://github.com/pengcunfu/devbox/issues) 中反馈。
 
 ## 下一步
 
 - [功能概览](./features.md)
 - [配置说明](./configuration.md)
+- [开源协议](./license.md)

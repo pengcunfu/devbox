@@ -4,17 +4,17 @@ layout: home
 hero:
   name: ProgramBox
   text: Windows 开发环境管理
-  tagline: 多语言运行时切换 · 系统工具 · 应用与服务集中管理
+  tagline: 多语言运行时切换 · 系统工具 · 应用与服务集中管理 · MIT 开源
   actions:
     - theme: brand
       text: 快速开始
       link: /guide/getting-started
     - theme: alt
       text: 下载 v1.0.0
-      link: https://github.com/programbox/programbox/releases/latest
+      link: https://github.com/pengcunfu/devbox/releases/latest
     - theme: alt
       text: GitHub
-      link: https://github.com/programbox/programbox
+      link: https://github.com/pengcunfu/devbox
 
 features:
   - title: 开发环境
@@ -23,8 +23,8 @@ features:
     details: 一键打开任务管理器、服务、注册表、环境变量等常用 Windows 管理工具。
   - title: 应用与服务
     details: 收藏本地/Web 工具，管理 MySQL、Redis、Nginx 等常见开发服务。
-  - title: 跨平台 UI
-    details: 基于 Avalonia 与 .NET 10，界面现代、可扩展，面向 Windows 桌面优化。
+  - title: 开源免费
+    details: 基于 Avalonia 与 .NET 10，MIT 协议，源码托管于 pengcunfu/devbox。
 ---
 
 ## 系统要求
@@ -41,3 +41,9 @@ features:
 | [配置说明](./guide/configuration.md) | `config.json` 与 `data.json` |
 | [从源码构建](./guide/build.md) | 开发者本地编译 |
 | [版本发布](./guide/releases.md) | GitHub Releases 与更新方式 |
+| [开源协议](./guide/license.md) | MIT 许可证说明 |
+
+## 仓库
+
+- 源码：<https://github.com/pengcunfu/devbox>
+- 问题反馈：[Issues](https://github.com/pengcunfu/devbox/issues)

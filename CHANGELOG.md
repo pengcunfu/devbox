@@ -15,6 +15,7 @@
 - 系统工具快捷入口
 - 本地应用、Web 应用与服务管理
 - VitePress 在线文档与 GitHub Pages 部署
+- MIT 开源协议
 
-[Unreleased]: https://github.com/programbox/programbox/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/programbox/programbox/releases/tag/v1.0.0
+[Unreleased]: https://github.com/pengcunfu/devbox/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/pengcunfu/devbox/releases/tag/v1.0.0

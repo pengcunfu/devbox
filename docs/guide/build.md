@@ -9,8 +9,8 @@
 ## 克隆与编译
 
 ```bash
-git clone https://github.com/programbox/programbox.git
-cd programbox
+git clone https://github.com/pengcunfu/devbox.git
+cd devbox
 
 dotnet restore
 dotnet build -c Release
@@ -48,14 +48,14 @@ dotnet publish ProgramBox.csproj ^
 ```bash
 cd docs
 npm install
-npm run dev      # 本地预览 http://localhost:5173
+npm run dev      # 本地预览 http://localhost:5173/devbox/
 npm run build    # 输出到 docs/.vitepress/dist
 ```
 
-推送至 `main`/`master` 且变更 `docs/**` 时，GitHub Actions 会自动部署到 GitHub Pages。
+推送至 `master` 且变更 `docs/**` 时，GitHub Actions 会自动部署到 GitHub Pages。
 
 ::: info GitHub Pages 首次启用
-仓库 **Settings → Pages → Build and deployment** 选择 **GitHub Actions**。
+仓库 [Settings → Pages](https://github.com/pengcunfu/devbox/settings/pages) 中，**Build and deployment** 选择 **GitHub Actions**。
 :::
 
-若仓库名不是 `programbox`，请修改 `docs/.vitepress/config.ts` 中的 `repoName` 默认值，以及 `Utils/VersionInfo.cs` 中的文档 URL。
+在线文档地址：**https://pengcunfu.github.io/devbox/**
