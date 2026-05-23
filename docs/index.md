@@ -1,0 +1,43 @@
+---
+layout: home
+
+hero:
+  name: ProgramBox
+  text: Windows 开发环境管理
+  tagline: 多语言运行时切换 · 系统工具 · 应用与服务集中管理
+  actions:
+    - theme: brand
+      text: 快速开始
+      link: /guide/getting-started
+    - theme: alt
+      text: 下载 v1.0.0
+      link: https://github.com/programbox/programbox/releases/latest
+    - theme: alt
+      text: GitHub
+      link: https://github.com/programbox/programbox
+
+features:
+  - title: 开发环境
+    details: 管理 Java、Node.js、Python、PHP、C++ 等运行时，支持多版本与快速切换。
+  - title: 系统工具
+    details: 一键打开任务管理器、服务、注册表、环境变量等常用 Windows 管理工具。
+  - title: 应用与服务
+    details: 收藏本地/Web 工具，管理 MySQL、Redis、Nginx 等常见开发服务。
+  - title: 跨平台 UI
+    details: 基于 Avalonia 与 .NET 10，界面现代、可扩展，面向 Windows 桌面优化。
+---
+
+## 系统要求
+
+- Windows 10 或更高版本（64 位）
+- 无需单独安装 .NET（发布包为自包含）
+
+## 文档导航
+
+| 主题 | 说明 |
+|------|------|
+| [快速开始](./guide/getting-started.md) | 下载、安装与首次使用 |
+| [功能概览](./guide/features.md) | 各模块能做什么 |
+| [配置说明](./guide/configuration.md) | `config.json` 与 `data.json` |
+| [从源码构建](./guide/build.md) | 开发者本地编译 |
+| [版本发布](./guide/releases.md) | GitHub Releases 与更新方式 |

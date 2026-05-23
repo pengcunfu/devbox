@@ -16,6 +16,7 @@ namespace ProgramBox
         {
             InitializeComponent();
             _dataManager = new JsonDataManager();
+            VersionText.Text = $"版本 {VersionInfo.Current}";
             LoadData();
             
             // No navigation buttons - directly show applications
@@ -91,7 +92,7 @@ namespace ProgramBox
 
         private void ViewDocumentationButton_Click(object? sender, RoutedEventArgs e)
         {
-            AppHelper.OpenInBrowser("https://github.com/programbox/docs");
+            AppHelper.OpenInBrowser(VersionInfo.DocumentationUrl);
         }
 
         private void DevelopmentCard_Click(object? sender, PointerPressedEventArgs e)
@@ -162,10 +163,10 @@ namespace ProgramBox
         private void AboutMenuItem_Click(object? sender, RoutedEventArgs e)
         {
             _ = AppHelper.ShowInfoAsync(
-                "ProgramBox v2.0.0\n" +
+                $"ProgramBox {VersionInfo.Display}\n" +
                 "编程环境管理工具\n\n" +
                 "专为程序员设计的多语言开发环境管理工具\n" +
-                "支持 Java, Node.js, Python, C++ 等多种开发环境");
+                "支持 Java、Node.js、Python、C++ 等多种开发环境");
         }
 
         #endregion

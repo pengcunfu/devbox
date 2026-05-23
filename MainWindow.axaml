@@ -2,11 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="375" d:DesignHeight="812"
+        mc:Ignorable="d" d:DesignWidth="440" d:DesignHeight="520"
         x:Class="ProgramBox.MainWindow"
         Title="ProgramBox - 编程环境管理工具"
-        Width="375" Height="812"
-        MinWidth="320" MinHeight="568"
+        Width="440" Height="520"
+        MinWidth="380" MinHeight="400"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BackgroundBrush}">
     
@@ -22,161 +22,65 @@
         <Menu Grid.Row="0" Background="{DynamicResource SurfaceBrush}">
             <!-- File Menu -->
             <MenuItem Header="_文件">
-                <MenuItem Header="_设置" Click="SettingsMenuItem_Click">
-                    <MenuItem.Icon>
-                        <TextBlock Text="⚙" FontSize="14"/>
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem Header="_设置" Click="SettingsMenuItem_Click"/>
                 <Separator/>
-                <MenuItem Header="_退出" Click="ExitMenuItem_Click">
-                    <MenuItem.Icon>
-                        <TextBlock Text="❌" FontSize="14"/>
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem Header="_退出" Click="ExitMenuItem_Click"/>
             </MenuItem>
 
             <!-- View Menu -->
             <MenuItem Header="_视图">
-                <MenuItem Header="_应用程序" Click="ViewApplicationsMenuItem_Click">
-                    <MenuItem.Icon>
-                        <TextBlock Text="📦" FontSize="14"/>
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem Header="_应用程序" Click="ViewApplicationsMenuItem_Click"/>
             </MenuItem>
 
             <!-- System Tools Menu -->
             <MenuItem Header="_系统工具">
                 <!-- System Management Submenu -->
                 <MenuItem Header="系统管理">
-                    <MenuItem Header="计算机管理" Click="ToolMenuItem_Click" Tag="computer">
-                        <MenuItem.Icon>
-                            <TextBlock Text="💻" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="服务" Click="ToolMenuItem_Click" Tag="server">
-                        <MenuItem.Icon>
-                            <TextBlock Text="🔧" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="系统配置" Click="ToolMenuItem_Click" Tag="config">
-                        <MenuItem.Icon>
-                            <TextBlock Text="⚙" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="注册表" Click="ToolMenuItem_Click" Tag="regedit">
-                        <MenuItem.Icon>
-                            <TextBlock Text="📝" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="环境变量" Click="ToolMenuItem_Click" Tag="env">
-                        <MenuItem.Icon>
-                            <TextBlock Text="🌐" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
+                    <MenuItem Header="计算机管理" Click="ToolMenuItem_Click" Tag="computer"/>
+                    <MenuItem Header="服务" Click="ToolMenuItem_Click" Tag="server"/>
+                    <MenuItem Header="系统配置" Click="ToolMenuItem_Click" Tag="config"/>
+                    <MenuItem Header="注册表" Click="ToolMenuItem_Click" Tag="regedit"/>
+                    <MenuItem Header="环境变量" Click="ToolMenuItem_Click" Tag="env"/>
                 </MenuItem>
 
                 <Separator/>
 
                 <!-- Hardware & Devices Submenu -->
                 <MenuItem Header="硬件与设备">
-                    <MenuItem Header="设备管理器" Click="ToolMenuItem_Click" Tag="device">
-                        <MenuItem.Icon>
-                            <TextBlock Text="🖥" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="磁盘管理" Click="ToolMenuItem_Click" Tag="disk">
-                        <MenuItem.Icon>
-                            <TextBlock Text="💾" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="声音设置" Click="ToolMenuItem_Click" Tag="sound">
-                        <MenuItem.Icon>
-                            <TextBlock Text="🔊" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="显示设置" Click="ToolMenuItem_Click" Tag="display">
-                        <MenuItem.Icon>
-                            <TextBlock Text="🖼" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="电源选项" Click="ToolMenuItem_Click" Tag="power">
-                        <MenuItem.Icon>
-                            <TextBlock Text="🔋" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
+                    <MenuItem Header="设备管理器" Click="ToolMenuItem_Click" Tag="device"/>
+                    <MenuItem Header="磁盘管理" Click="ToolMenuItem_Click" Tag="disk"/>
+                    <MenuItem Header="声音设置" Click="ToolMenuItem_Click" Tag="sound"/>
+                    <MenuItem Header="显示设置" Click="ToolMenuItem_Click" Tag="display"/>
+                    <MenuItem Header="电源选项" Click="ToolMenuItem_Click" Tag="power"/>
                 </MenuItem>
 
                 <Separator/>
 
                 <!-- Network & Security Submenu -->
                 <MenuItem Header="网络与安全">
-                    <MenuItem Header="防火墙" Click="ToolMenuItem_Click" Tag="firewall">
-                        <MenuItem.Icon>
-                            <TextBlock Text="🛡" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="本地安全策略" Click="ToolMenuItem_Click" Tag="security">
-                        <MenuItem.Icon>
-                            <TextBlock Text="🔒" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="网络连接" Click="ToolMenuItem_Click" Tag="network">
-                        <MenuItem.Icon>
-                            <TextBlock Text="🌐" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="用户账户控制" Click="ToolMenuItem_Click" Tag="uac">
-                        <MenuItem.Icon>
-                            <TextBlock Text="👤" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
+                    <MenuItem Header="防火墙" Click="ToolMenuItem_Click" Tag="firewall"/>
+                    <MenuItem Header="本地安全策略" Click="ToolMenuItem_Click" Tag="security"/>
+                    <MenuItem Header="网络连接" Click="ToolMenuItem_Click" Tag="network"/>
+                    <MenuItem Header="用户账户控制" Click="ToolMenuItem_Click" Tag="uac"/>
                 </MenuItem>
 
                 <Separator/>
 
                 <!-- Performance & Monitoring Submenu -->
                 <MenuItem Header="性能与监控">
-                    <MenuItem Header="任务管理器" Click="ToolMenuItem_Click" Tag="task">
-                        <MenuItem.Icon>
-                            <TextBlock Text="📊" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="资源监视器" Click="ToolMenuItem_Click" Tag="res">
-                        <MenuItem.Icon>
-                            <TextBlock Text="📈" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="事件查看器" Click="ToolMenuItem_Click" Tag="event">
-                        <MenuItem.Icon>
-                            <TextBlock Text="📋" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="系统信息" Click="ToolMenuItem_Click" Tag="info">
-                        <MenuItem.Icon>
-                            <TextBlock Text="ℹ" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="计划任务" Click="ToolMenuItem_Click" Tag="planned_task">
-                        <MenuItem.Icon>
-                            <TextBlock Text="⏰" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
+                    <MenuItem Header="任务管理器" Click="ToolMenuItem_Click" Tag="task"/>
+                    <MenuItem Header="资源监视器" Click="ToolMenuItem_Click" Tag="res"/>
+                    <MenuItem Header="事件查看器" Click="ToolMenuItem_Click" Tag="event"/>
+                    <MenuItem Header="系统信息" Click="ToolMenuItem_Click" Tag="info"/>
+                    <MenuItem Header="计划任务" Click="ToolMenuItem_Click" Tag="planned_task"/>
                 </MenuItem>
             </MenuItem>
 
             <!-- Help Menu -->
             <MenuItem Header="_帮助">
-                <MenuItem Header="查看文档" Click="ViewDocumentationButton_Click">
-                    <MenuItem.Icon>
-                        <TextBlock Text="📖" FontSize="14"/>
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem Header="查看文档" Click="ViewDocumentationButton_Click"/>
                 <Separator/>
-                <MenuItem Header="关于" Click="AboutMenuItem_Click">
-                    <MenuItem.Icon>
-                        <TextBlock Text="ℹ" FontSize="14"/>
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem Header="关于" Click="AboutMenuItem_Click"/>
             </MenuItem>
         </Menu>
 
@@ -206,8 +110,7 @@
                         <UniformGrid Columns="3" Margin="0,0,0,24">
                             <!-- Development Tools -->
                             <Border Classes="Card" Cursor="Hand" PointerPressed="DevelopmentCard_Click">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="💻" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                                <StackPanel HorizontalAlignment="Center" Margin="8">
                                     <TextBlock Text="开发环境" Classes="Subtitle" TextAlignment="Center"/>
                                     <TextBlock Text="管理Java、Node.js、Python等开发环境" Classes="Body" TextAlignment="Center"/>
                                 </StackPanel>
@@ -215,8 +118,7 @@
 
                             <!-- System Tools -->
                             <Border Classes="Card" Cursor="Hand" PointerPressed="SystemCard_Click">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="⚙" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                                <StackPanel HorizontalAlignment="Center" Margin="8">
                                     <TextBlock Text="系统工具" Classes="Subtitle" TextAlignment="Center"/>
                                     <TextBlock Text="快速访问Windows系统管理工具" Classes="Body" TextAlignment="Center"/>
                                 </StackPanel>
@@ -224,8 +126,7 @@
 
                             <!-- Application Management -->
                             <Border Classes="Card" Cursor="Hand" PointerPressed="ApplicationCard_Click">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBlock Text="📦" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                                <StackPanel HorizontalAlignment="Center" Margin="8">
                                     <TextBlock Text="应用管理" Classes="Subtitle" TextAlignment="Center"/>
                                     <TextBlock Text="管理和快速启动常用应用程序" Classes="Body" TextAlignment="Center"/>
                                 </StackPanel>
@@ -244,7 +145,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="StatusText" Text="就绪" FontSize="12" VerticalAlignment="Center" Margin="8,0"/>
-                <TextBlock x:Name="VersionText" Text="版本 2.0.0" FontSize="12" VerticalAlignment="Center" Margin="8,0" Grid.Column="1"/>
+                <TextBlock x:Name="VersionText" Text="版本 1.0.0" FontSize="12" VerticalAlignment="Center" Margin="8,0" Grid.Column="1"/>
             </Grid>
         </Border>
     </Grid>

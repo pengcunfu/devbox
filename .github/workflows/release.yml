@@ -7,77 +7,95 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v1.0.0)'
+        description: 'Release tag (e.g. v1.0.0)'
         required: true
         default: 'v1.0.0'
 
 jobs:
-  build-and-release:
+  release:
     runs-on: windows-latest
     permissions:
       contents: write
-    
+
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-        
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
+            $tag = '${{ github.event.inputs.version }}'
+          } else {
+            $tag = '${{ github.ref_name }}'
+          }
+          if ($tag -notmatch '^v') { $tag = "v$tag" }
+          $semver = $tag.TrimStart('v')
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "semver=$semver" >> $env:GITHUB_OUTPUT
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          
-      - name: Restore dependencies
-        run: dotnet restore
-        
-      - name: Build application
-        run: dotnet build --configuration Release --no-restore
-        
+
       - name: Publish Windows x64
         run: |
-          dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish/win-x64
-          
-      - name: Publish Windows x86
-        run: |
-          dotnet publish -c Release -r win-x86 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish/win-x86
-          
-      - name: Create zip archives
-        run: |
-          Compress-Archive -Path ./publish/win-x64/* -DestinationPath ./ProgramBox-win-x64.zip
-          Compress-Archive -Path ./publish/win-x86/* -DestinationPath ./ProgramBox-win-x86.zip
-          
-      - name: Get version
-        id: get_version
-        run: |
-          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
-            echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_OUTPUT
-          } else {
-            echo "VERSION=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
-          }
+          dotnet publish ProgramBox.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:Version=${{ steps.version.outputs.semver }} `
+            -p:InformationalVersion=${{ steps.version.outputs.semver }} `
+            -o ./publish/win-x64
+
+      - name: Create zip
         shell: pwsh
-        
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+        run: |
+          $zip = "ProgramBox-${{ steps.version.outputs.semver }}-win-x64.zip"
+          Compress-Archive -Path ./publish/win-x64/* -DestinationPath "./$zip" -Force
+          "zip=$zip" >> $env:GITHUB_OUTPUT
+        id: zip
+
+      - name: Extract release notes
+        id: notes
+        shell: pwsh
+        run: |
+          $tag = '${{ steps.version.outputs.tag }}'
+          $semver = '${{ steps.version.outputs.semver }}'
+          $body = @"
+          ## ProgramBox $tag
+
+          ### 下载
+          - **ProgramBox-$semver-win-x64.zip** — Windows 64 位，解压后运行 `ProgramBox.exe`
+
+          ### 安装
+          1. 在 [Releases](https://github.com/${{ github.repository }}/releases) 下载 zip
+          2. 解压到任意目录
+          3. 运行 `ProgramBox.exe`
+
+          详细说明见 [在线文档](https://programbox.github.io/programbox/)。
+          "@
+          if (Test-Path CHANGELOG.md) {
+            $changelog = Get-Content CHANGELOG.md -Raw
+            if ($changelog -match "(?s)## \[$semver\][^\#]*") {
+              $section = $Matches[0].Trim()
+              $body += "`n`n### 更新内容`n$section"
+            }
+          }
+          $body | Out-File -FilePath release-notes.md -Encoding utf8
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
-          name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ProgramBox ${{ steps.version.outputs.tag }}
+          body_path: release-notes.md
           draft: false
           prerelease: false
-          files: |
-            ./ProgramBox-win-x64.zip
-            ./ProgramBox-win-x86.zip
-          body: |
-            ## ProgramBox ${{ steps.get_version.outputs.VERSION }}
-            
-            ### 下载说明
-            - **ProgramBox-win-x64.zip**: Windows 64位版本
-            - **ProgramBox-win-x86.zip**: Windows 32位版本
-            
-            ### 安装方法
-            1. 下载对应系统版本的压缩包
-            2. 解压到任意目录
-            3. 运行 ProgramBox.exe
-            
-            ### 更新内容
-            请查看提交历史了解详细更新内容。
+          files: ${{ steps.zip.outputs.zip }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

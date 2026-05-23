@@ -1,0 +1,61 @@
+# 从源码构建
+
+## 环境要求
+
+- Windows 10+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)（与仓库 `global.json` 一致）
+- Git
+
+## 克隆与编译
+
+```bash
+git clone https://github.com/programbox/programbox.git
+cd programbox
+
+dotnet restore
+dotnet build -c Release
+dotnet run -c Release
+```
+
+编译产物位于 `bin/Release/net10.0/`。
+
+## 本地发布（单文件）
+
+```bash
+dotnet publish ProgramBox.csproj ^
+  -c Release ^
+  -r win-x64 ^
+  --self-contained true ^
+  -p:PublishSingleFile=true ^
+  -p:IncludeNativeLibrariesForSelfExtract=true ^
+  -o ./publish/win-x64
+```
+
+在 `publish/win-x64` 目录运行 `ProgramBox.exe`。
+
+## 修改版本号
+
+发布前请同步以下位置：
+
+1. 根目录 `VERSION`
+2. `ProgramBox.csproj` 中的 `<Version>` 等属性
+3. `CHANGELOG.md` 对应版本条目
+
+应用内版本从程序集信息读取，无需改 XAML 硬编码。
+
+## 文档站点（VitePress）
+
+```bash
+cd docs
+npm install
+npm run dev      # 本地预览 http://localhost:5173
+npm run build    # 输出到 docs/.vitepress/dist
+```
+
+推送至 `main`/`master` 且变更 `docs/**` 时，GitHub Actions 会自动部署到 GitHub Pages。
+
+::: info GitHub Pages 首次启用
+仓库 **Settings → Pages → Build and deployment** 选择 **GitHub Actions**。
+:::
+
+若仓库名不是 `programbox`，请修改 `docs/.vitepress/config.ts` 中的 `repoName` 默认值，以及 `Utils/VersionInfo.cs` 中的文档 URL。

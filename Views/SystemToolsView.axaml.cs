@@ -112,16 +112,6 @@ namespace ProgramBox.Views
                 VerticalAlignment = VerticalAlignment.Center
             };
 
-            // 图标 (使用emoji作为临时图标)
-            var icon = new TextBlock
-            {
-                Text = GetToolEmoji(tool.Key),
-                FontSize = 32,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Avalonia.Thickness(0, 0, 0, 8)
-            };
-
-            // 文本
             var text = new TextBlock
             {
                 Text = tool.Name,
@@ -131,41 +121,10 @@ namespace ProgramBox.Views
                 MaxWidth = 120
             };
 
-            stackPanel.Children.Add(icon);
             stackPanel.Children.Add(text);
             card.Child = stackPanel;
 
             return card;
-        }
-
-        /// <summary>
-        /// 获取工具emoji图标
-        /// </summary>
-        private string GetToolEmoji(string key)
-        {
-            return key.ToLower() switch
-            {
-                "computer" => "💻",
-                "server" => "🔧",
-                "config" => "⚙",
-                "regedit" => "📝",
-                "env" => "🌐",
-                "device" => "🖥",
-                "disk" => "💾",
-                "sound" => "🔊",
-                "display" => "🖼",
-                "power" => "🔋",
-                "firewall" => "🛡",
-                "security" => "🔒",
-                "network" => "🌐",
-                "uac" => "👤",
-                "task" => "📊",
-                "res" => "📈",
-                "event" => "📋",
-                "info" => "ℹ",
-                "planned_task" => "⏰",
-                _ => "🔧"
-            };
         }
 
         #region 事件处理
